@@ -1,0 +1,31 @@
+.custom-green-button {
+  background-color: #006b2c !important;
+  color: white !important;
+  border-radius: 5px !important;
+
+  &:hover {
+    background-color: #005024 !important;
+  }
+
+  &:disabled {
+    background-color: #cccccc !important;
+  }
+}
+
+.password-toggle-btn {
+  width: 36px !important;
+  height: 36px !important;
+  margin-right: 8px !important;
+
+  .password-toggle-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    color: #6b7280 !important;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #4b5563 !important;
+    }
+  }
+}

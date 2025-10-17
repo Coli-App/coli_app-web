@@ -1,0 +1,52 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="bg-white p-10 rounded-2xl shadow-lg w-full max-w-md text-center">
+    <div class="flex flex-col items-center mb-6 gap-5">
+      <div class="flex items-center space-x-2">
+        <img src="assets/images/pulse.png" alt="ColiApp Logo" class="h-10 w-10" />
+        <h1 class="text-2xl font-bold text-[#006b2c]">ColiApp</h1>
+      </div>
+      <div>
+        <h2 class="text-xl font-semibold text-gray-800">Iniciar Sesión</h2>
+        <p class="text-sm text-gray-500">Sistema de Gestión de Espacios Deportivos</p>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-8 text-left">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Correo Electrónico</mat-label>
+        <input matInput formControlName="email" type="email" placeholder/>
+        <mat-hint>Usa tu correo institucional</mat-hint>
+
+        @if (form.get('email')?.hasError('required')) {
+          <mat-error>
+            El correo es obligatorio.
+          </mat-error>
+        }
+        @if (form.get('email')?.hasError('email')) {
+          <mat-error>
+            Por favor ingresa un correo válido.
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Contraseña</mat-label>
+        <input matInput [type]="hide ? 'password' : 'text'" formControlName="password"/>
+        <button mat-icon-button matSuffix type="button" (click)="hide = !hide"
+          aria-label="Mostrar u ocultar contraseña" class="password-toggle-btn">
+          <mat-icon class="password-toggle-icon">{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+
+        @if (form.get('password')?.hasError('required')) {
+          <mat-error>
+            Por favor ingresa una contraseña.
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <button matButton="filled" type="submit" class="custom-green-button w-full font-semibold">
+        Iniciar Sesión
+      </button>
+    </form>
+  </div>
+</div>
