@@ -14,5 +14,5 @@ export interface AuthResponse {
       token_type: string;
     };
   };
-  message: string;
+  messages: string;
 }

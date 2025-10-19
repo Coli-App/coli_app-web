@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@app/core/services/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +29,7 @@ export class LoginComponent implements OnInit {
   loginError = signal<string | null>(null);
 
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
@@ -45,7 +46,8 @@ export class LoginComponent implements OnInit {
 
       this.authService.login(this.form.value).subscribe({
         next: (response) => {
-          console.log('Login successful', response.message);
+          console.log('Login successful', response.messages);
+          this.router.navigate(['/dashboard']);
         },
         error: (error) => {
           console.error('Login failed', error);

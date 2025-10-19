@@ -1,0 +1,39 @@
+<mat-toolbar color="white" class="toolbar shadow-sm px-4 md:px-6">
+  <div class="flex items-center gap-2 md:gap-3">
+    <a [routerLink]="['/dashboard']" class="flex items-center gap-2 no-underline">
+      <img src="assets/images/pulse.png" alt="Logo" class="w-6 h-6 md:w-8 md:h-8" />
+      <span class="text-green-700 text-lg md:text-xl font-semibold">ColiApp</span>
+    </a>
+  </div>
+
+  <!-- Derecha escritorio -->
+  <div class="hidden md:flex items-center gap-4">
+    <div class="text-right leading-tight">
+      <div class="text-gray-800 text-sm font-medium">{{ user().email }}</div>
+      <div class="text-xs text-gray-500">{{ user().role }}</div>
+    </div>
+
+    <button mat-stroked-button color="primary" (click)="logout()" class="flex items-center gap-1">
+      <mat-icon>logout</mat-icon>
+      Salir
+    </button>
+  </div>
+
+  <!-- Derecha móvil -->
+  <div class="flex md:hidden">
+    <button mat-icon-button [matMenuTriggerFor]="userMenu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <div class="px-3 py-2">
+        <div class="text-sm font-medium text-gray-800">{{ user().email }}</div>
+        <div class="text-xs text-gray-500">{{ user().role }}</div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Salir</span>
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>

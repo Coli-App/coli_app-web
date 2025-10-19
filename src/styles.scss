@@ -32,6 +32,34 @@ body {
   margin: 0;
 }
 
-html, body { height: 100%; }
-body { margin: 0; }
+.mat-mdc-menu-panel {
+  background-color: #f8fafc !important;
+  color: #1f2937 !important;
+}
 
+.mat-mdc-menu-item:hover {
+  background-color: #e5e7eb !important;
+}
+
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+app-root, body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+app-header {
+  flex-shrink: 0;
+}
+
+router-outlet, main, .app-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f9fafb;
+}

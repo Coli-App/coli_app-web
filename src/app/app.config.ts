@@ -17,6 +17,6 @@ export const appConfig: ApplicationConfig = {
     
     provideHttpClient(
       withInterceptors([authTokenInterceptor])
-    ),
+    )
   ]
 };

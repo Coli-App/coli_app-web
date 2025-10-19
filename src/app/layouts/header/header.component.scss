@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 64px;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+mat-toolbar button[mat-stroked-button] {
+  border-color: #e5e7eb;
+  color: #374151;
+
+  &:hover {
+    background-color: #f9fafb;
+  }
+
+  mat-icon {
+    font-size: 18px;
+  }
+}
+
+.text-green-700 {
+  color: #047857;
+}
