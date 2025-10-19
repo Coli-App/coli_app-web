@@ -31,10 +31,10 @@
 
       <mat-form-field appearance="fill" class="w-full">
         <mat-label>Contraseña</mat-label>
-        <input matInput [type]="hide ? 'password' : 'text'" formControlName="password"/>
-        <button mat-icon-button matSuffix type="button" (click)="hide = !hide"
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password"/>
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword"
           aria-label="Mostrar u ocultar contraseña" class="password-toggle-btn">
-          <mat-icon class="password-toggle-icon">{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+          <mat-icon class="password-toggle-icon">{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
 
         @if (form.get('password')?.hasError('required')) {
@@ -43,6 +43,12 @@
           </mat-error>
         }
       </mat-form-field>
+
+      @if (loginError()) {
+        <mat-error class="block text-center p-2 bg-red-100 text-red-700 rounded-md border-red-500 border">
+          {{ loginError() }}
+        </mat-error>
+      }
 
       <button matButton="filled" type="submit" class="custom-green-button w-full font-semibold">
         Iniciar Sesión
