@@ -1,0 +1,64 @@
+.dialog-container {
+  padding: 0;
+  max-width: 400px;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 24px 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.warning-icon {
+  color: #c9bb22;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.dialog-content {
+  padding: 24px;
+}
+
+.dialog-content p {
+  margin: 0 0 12px 0;
+  color: #374151;
+}
+
+.email-text {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.warning-text {
+  color: #ef4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 16px !important;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px 24px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.delete-button {
+  background-color: #dc2626 !important;
+  color: white !important;
+
+  &:hover {
+    background-color: #b91c1c !important;
+  }
+}

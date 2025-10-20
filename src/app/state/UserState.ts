@@ -1,15 +1,89 @@
-import { Injectable, signal} from '@angular/core';
+import { Injectable, signal, inject, computed, effect } from '@angular/core';
+import { TokenService } from '@app/core/services/auth/token.service';
 
-@Injectable({providedIn: 'root'})
+export interface User {
+  name: string;
+  email: string;
+  role: string;
+}
+const USER_DATA_KEY = 'user_data';
+
+@Injectable({ providedIn: 'root' })
 export class UserState {
-  currentUser = signal<{name: string; email: string; role: string;} | null>(null);
+  private tokenService = inject(TokenService);
+  
+  private readonly _currentUser = signal<User | null>(null);
+  
+  public readonly currentUser = this._currentUser.asReadonly();
 
-  setUser(data: { name: string; email: string; role: string; }) {
-    this.currentUser.set(data);
+  public readonly isAuthenticated = computed(() => !!this.currentUser());
+  public readonly userRole = computed(() => this.currentUser()?.role ?? null);
+  public readonly userEmail = computed(() => this.currentUser()?.email ?? null);
+
+  constructor() {
+    this.loadUserFromToken();
+    effect(() => {
+      const token = this.tokenService.getAccessToken();
+      if (token && !this.currentUser()) {
+  
+        this.loadUserFromToken();
+      } else if (!token && this.currentUser()) {
+        this.clearUser();
+      }
+    });
+  }
+
+  private setUser(user: User) {
+    this._currentUser.set(user);
+    localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+    console.log('User data saved:', user);
   }
 
   clearUser() {
-    this.currentUser.set(null);
+    this._currentUser.set(null);
+    localStorage.removeItem(USER_DATA_KEY);
+  }
+
+ private loadUserFromToken() {
+    try {
+      const token = this.tokenService.getAccessToken();
+      const isExpired = this.tokenService.isTokenExpired();
+      
+      if (!token || isExpired) {
+        this.clearUser();
+        return;
+      }
+
+      const userData = localStorage.getItem(USER_DATA_KEY);
+      if (userData) {
+        try {
+          const parsedData = JSON.parse(userData);
+          this._currentUser.set(parsedData);
+          console.log('User restored from localStorage');
+          return;
+        } catch (e) {
+          console.warn('Invalid userData in localStorage, removing...');
+          localStorage.removeItem(USER_DATA_KEY);
+        }
+      }
+
+      const decodedToken = this.tokenService.decodeToken();
+      
+      if (decodedToken?.email && decodedToken?.role) {
+        const user: User = {
+          name: decodedToken.name || decodedToken.sub || 'Usuario',
+          email: decodedToken.email,
+          role: decodedToken.role,
+        };
+        this.setUser(user);
+        console.log('User loaded from token');
+      } else {
+        console.log('No valid user data in token');
+        this.clearUser();
+      }
+    } catch (error) {
+      console.error('Error loading user from token:', error);
+      this.clearUser();
+    }
   }
 }
-

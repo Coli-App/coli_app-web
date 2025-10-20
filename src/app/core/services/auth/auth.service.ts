@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
 import { TokenService } from '@app/core/services/auth/token.service';
-import { UserState } from '@app/state/UserState';
-import { finalize, Observable, tap } from 'rxjs';
+import { finalize, Observable, tap, catchError, of } from 'rxjs';
 import { AuthResponse } from '@app/core/models/auth-response.model';
 import { LoginRequest } from '@app/core/models/requests/login-request';
 import { Router } from '@angular/router';
@@ -18,7 +17,6 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private tokenService: TokenService,
-    private userState: UserState,
     private router: Router
   ) {}
 
@@ -31,24 +29,16 @@ export class AuthService {
             response.data.session.refresh_token
           );
 
-          this.userState.setUser({
-            name: response.data.user.id,
-            email: response.data.user.email,
-            role: response.data.user.role,
-          });
+          setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+          }, 100);
         }
       })
     );
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>(`${this.getUrl()}/logout`, {}).pipe(
-      finalize(() => {
-        this.tokenService.clearTokens();
-        this.userState.clearUser();
-        this.router.navigate(['/']);
-      })
-    );
+    return this.http.post<void>(`${this.getUrl()}/logout`, {});
   }
 
   getUrl() {

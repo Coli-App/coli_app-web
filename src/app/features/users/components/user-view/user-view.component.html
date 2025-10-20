@@ -1,0 +1,110 @@
+<div class="user-view-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      <mat-icon>person</mat-icon>
+      Detalles del Usuario
+    </h2>
+    <button mat-icon-button (click)="onClose()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    @if (loading()) {
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Cargando información del usuario...</p>
+    </div>
+    }
+
+    @if (error()) {
+    <div class="error-container">
+      <mat-icon class="error-icon">error</mat-icon>
+      <p class="error-message">{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadUser()">
+        Reintentar
+      </button>
+    </div>
+    }
+
+    @if (!loading() && !error() && user()) {
+    <div class="user-details">
+      <mat-card class="user-card">
+        <mat-card-header>
+          <div mat-card-avatar class="user-avatar">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <mat-card-title>{{ user()?.name }}</mat-card-title>
+          <mat-card-subtitle>{{ user()?.email }}</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="user-info-grid">
+            <div class="info-item">
+              <mat-icon class="info-icon">badge</mat-icon>
+              <div class="info-content">
+                <label>ID de Usuario</label>
+                <span class="info-value">{{ user()?.id }}</span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <mat-icon class="info-icon">person</mat-icon>
+              <div class="info-content">
+                <label>Nombre Completo</label>
+                <span class="info-value">{{ user()?.name }}</span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <mat-icon class="info-icon">email</mat-icon>
+              <div class="info-content">
+                <label>Correo Electrónico</label>
+                <span class="info-value">{{ user()?.email }}</span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <mat-icon class="info-icon">security</mat-icon>
+              <div class="info-content">
+                <label>Rol</label>
+                <span class="info-value role-badge" [class]="'role-' + user()?.rol">
+                  {{ getRoleDisplayName(user()?.rol || '') }}
+                </span>
+              </div>
+            </div>
+
+            @if(user()?.createdAt){
+            <div class="info-item">
+              <mat-icon class="info-icon">schedule</mat-icon>
+              <div class="info-content">
+                <label>Fecha de Registro</label>
+                <span class="info-value">{{ formatDate(user()?.createdAt || '') }}</span>
+              </div>
+            </div>
+            }
+
+            @if (user()?.updatedAt) {
+            <div class="info-item">
+              <mat-icon class="info-icon">update</mat-icon>
+              <div class="info-content">
+                <label>Última Actualización</label>
+                <span class="info-value">{{ formatDate(user()?.updatedAt || '') }}</span>
+              </div>
+            </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+  </mat-dialog-content>
+
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-raised-button color="primary" (click)="onClose()">
+      <mat-icon>close</mat-icon>
+      Cerrar
+    </button>
+  </mat-dialog-actions>
+</div>

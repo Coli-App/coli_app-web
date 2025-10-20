@@ -4,7 +4,8 @@ import { NotFoundComponent } from '@layouts/not-found/not-found.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { loginGuard } from '@core/guards/login.guard';
 import { authGuard } from '@core/guards/auth.guard';
-
+import { UserListComponent } from '@features/users/pages/user-dashboard/user-list.component';
+ 
 export const routes: Routes = [
   {
     path: '',
@@ -18,7 +19,13 @@ export const routes: Routes = [
     component: DashboardComponent
   },
   {
+    path: 'usuarios',
+    canActivate: [authGuard],
+    component: UserListComponent
+  },
+  {
     path: '**',
+    canActivate: [authGuard],
     component: NotFoundComponent
   }
 ];

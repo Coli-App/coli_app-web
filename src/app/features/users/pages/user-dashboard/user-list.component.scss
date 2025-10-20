@@ -1,0 +1,31 @@
+.custom-green-button {
+  background-color: #006b2c !important;
+  color: white !important;
+  border-radius: 6px !important;
+
+  &:hover {
+    background-color: #005024 !important;
+  }
+
+  &:disabled {
+    background-color: #cccccc !important;
+  }
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .flex-col {
+    flex-direction: column;
+  }
+
+  .sm\\:flex-row {
+    flex-direction: row;
+  }
+}

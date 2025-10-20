@@ -1,0 +1,116 @@
+.mat-mdc-table {
+  background: white;
+
+  .mat-mdc-header-cell {
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .mat-mdc-cell {
+    border-bottom: 1px solid #f3f4f6;
+    padding: 1rem 1.5rem;
+  }
+
+  .mat-mdc-row:hover {
+    background-color: #f9fafb;
+  }
+}
+
+.role-chip {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+
+  &.role-administrador {
+    background-color: #f3c9c9 !important;
+    color: #dc2626 !important;
+  }
+
+  &.role-entrenador {
+    background-color: #8cb5eb !important;
+    color: #2563eb !important;
+  }
+
+  &.role-estudiante {
+    background-color: #c4f6d3 !important;
+    color: #16a34a !important;
+  }
+
+  &.role-personal-de-bienestar {
+    background-color: #faf4b5 !important;
+    color: #ca8a04 !important;
+  }
+}
+
+.user-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+mat-card {
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.py-12 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.text-6xl {
+  font-size: 3.75rem;
+  line-height: 1;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-gray-900 {
+  color: #111827;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.text-gray-300 {
+  color: #d1d5db;
+}
+
+@media (max-width: 768px) {
+  .mat-mdc-table {
+    font-size: 0.875rem;
+  }
+
+  .mat-mdc-cell {
+    padding: 0.75rem 1rem;
+  }
+}

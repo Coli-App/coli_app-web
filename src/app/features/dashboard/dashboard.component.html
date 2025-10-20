@@ -1,26 +1,27 @@
 <div class="min-h-screen bg-gray-50 p-10 space-y-10">
   <div>
-    <h1 class="text-3xl font-bold text-gray-900">Bienvenido, Carlos Administrador</h1>
+    <h1 class="text-3xl font-bold text-gray-900 break-all">
+      Bienvenido, <br class="sm:hidden" />
+      <span class="font-bold text-green-900">{{ user().email }}</span>,
+      <br>
+      {{ user().role }}
+    </h1>
+
     <p class="text-gray-600">Sistema de gestión de espacios deportivos - Universidad de los Llanos</p>
   </div>
 
   <!-- Stats -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    @for (item of stats; track item.title) {
-      <app-stat-card [title]="item.title" [value]="item.value" [subtitle]="item.subtitle" [icon]="item.icon" />
+    @for (item of stats(); track item.title) {
+    <app-stat-card [title]="item.title" [value]="item.value" [subtitle]="item.subtitle" [icon]="item.icon" />
     }
   </div>
 
   <!-- Actions -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     @for (card of actions; track card.title) {
-      <app-action-card
-        [title]="card.title"
-        [description]="card.description"
-        [buttonText]="card.buttonText"
-        [buttonIcon]="card.buttonIcon"
-        [route]="card.route"
-      />
+    <app-action-card [title]="card.title" [description]="card.description" [buttonText]="card.buttonText"
+      [buttonIcon]="card.buttonIcon" [route]="card.route" />
     }
   </div>
 </div>

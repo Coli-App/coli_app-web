@@ -1,0 +1,78 @@
+<div class="user-form-dialog">
+    <!-- Header del Dialog -->
+  <div class="dialog-header">
+    <h2 class="text-xl font-semibold text-gray-900 mb-1">{{ dialogTitle }}</h2>
+    <p class="text-sm text-gray-600">
+      {{ isEditMode ? 'Actualiza la información del usuario' : 'Completa la información para crear un nuevo usuario' }}
+    </p>
+  </div>
+
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="dialog-content">
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Nombre completo</mat-label>
+      <input matInput formControlName="name" placeholder="Ej: Juan Pérez">
+      <mat-icon matPrefix>person</mat-icon>
+      @if (userForm.get('name')?.invalid && userForm.get('name')?.touched) {
+        <mat-error>{{ getErrorMessage('name') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Correo electrónico</mat-label>
+      <input matInput type="email" formControlName="email" placeholder="ejemplo@unillanos.edu.co">
+      <mat-icon matPrefix>email</mat-icon>
+      @if (userForm.get('email')?.invalid && userForm.get('email')?.touched) {
+        <mat-error>{{ getErrorMessage('email') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>{{ isEditMode ? 'Nueva contraseña (opcional)' : 'Contraseña' }}</mat-label>
+      <input matInput type="password" formControlName="password"
+             [placeholder]="isEditMode ? 'Dejar vacío para mantener actual' : 'Mínimo 6 caracteres'">
+      <mat-icon matPrefix>lock</mat-icon>
+      @if (userForm.get('password')?.invalid && userForm.get('password')?.touched) {
+        <mat-error>{{ getErrorMessage('password') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Rol del usuario</mat-label>
+      <mat-icon matPrefix>badge</mat-icon>
+      <mat-select formControlName="rol" placeholder="Selecciona un rol">
+        @for (role of roles; track role.value) {
+          <mat-option [value]="role.value">{{ role.label }}</mat-option>
+        }
+      </mat-select>
+      @if (userForm.get('rol')?.invalid && userForm.get('rol')?.touched) {
+        <mat-error>{{ getErrorMessage('rol') }}</mat-error>
+      }
+    </mat-form-field>
+
+  </form>
+
+  <div class="dialog-actions">
+    <button
+      mat-button
+      type="button"
+      (click)="onCancel()"
+      [disabled]="isLoading()">
+      Cancelar
+    </button>
+
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      (click)="onSubmit()"
+      [disabled]="isLoading()"
+      class="bg-[#006b2c] hover:bg-[#005024]">
+      @if (isLoading()) {
+        <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+      } @else {
+        <mat-icon>{{ submitButtonIcon }}</mat-icon>
+      }
+      {{ submitButtonText }}
+    </button>
+  </div>
+</div>

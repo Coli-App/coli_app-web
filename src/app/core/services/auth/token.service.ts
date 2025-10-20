@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
 const ACCESS_TOKEN_KEY = 'access_token';
@@ -10,13 +10,23 @@ const REFRESH_TOKEN_KEY = 'refresh_token';
 export class TokenService {
   private jwtHelper = new JwtHelperService();
 
+  private readonly _accessToken = signal<string | null>(null);
+  public readonly accessToken = this._accessToken.asReadonly();
+
+  constructor() {
+    const token = localStorage.getItem(ACCESS_TOKEN_KEY);
+    this._accessToken.set(token);
+  }
+
   saveTokens(accessToken: string, refreshToken: string): void {
     localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+
+    this._accessToken.set(accessToken);
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem(ACCESS_TOKEN_KEY);
+    return this.accessToken();
   }
 
   getRefreshToken(): string | null {
@@ -36,5 +46,6 @@ export class TokenService {
   clearTokens(): void {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
+    this._accessToken.set(null);
   }
 }

@@ -1,0 +1,86 @@
+<mat-card>
+  <mat-card-content class="p-0">
+    <div class="overflow-x-auto">
+      <table mat-table [dataSource]="filteredUsers()" class="w-full">
+
+        <ng-container matColumnDef="usuario">
+          <th mat-header-cell *matHeaderCellDef class="font-semibold">Usuario</th>
+          <td mat-cell *matCellDef="let user" class="py-4">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-sm font-medium text-gray-700">
+                {{ user.iniciales }}
+              </div>
+              <span class="font-medium">{{ user.nombre }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="correo">
+          <th mat-header-cell *matHeaderCellDef class="font-semibold">Correo</th>
+          <td mat-cell *matCellDef="let user">
+            <span class="text-blue-600">{{ user.correo }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="rol">
+          <th mat-header-cell *matHeaderCellDef class="font-semibold">Rol</th>
+          <td mat-cell *matCellDef="let user">
+            <mat-chip
+              [class]="'role-chip role-' + user.rol.toLowerCase().replace(' ', '-')">
+              {{ user.rol }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fechaRegistro">
+          <th mat-header-cell *matHeaderCellDef class="font-semibold">Fecha de Registro</th>
+          <td mat-cell *matCellDef="let user">
+            {{ user.fechaRegistro }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef class="font-semibold">Acciones</th>
+          <td mat-cell *matCellDef="let user">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Acciones del usuario">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="viewUser(user)">
+                <mat-icon>visibility</mat-icon>
+                <span>Ver</span>
+              </button>
+              <button mat-menu-item (click)="editUser(user)">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button>
+              <button mat-menu-item (click)="deleteUser(user)" class="text-red-600">
+                <mat-icon>delete</mat-icon>
+                <span>Eliminar</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      @if (filteredUsers().length === 0) {
+      <div class="text-center py-12">
+        <mat-icon class="text-gray-300 text-6xl mb-4">
+          {{ searchTerm() ? 'search_off' : 'group_off' }}
+        </mat-icon>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">
+          {{ searchTerm() ? 'No se encontraron usuarios' : 'No hay usuarios registrados' }}
+        </h3>
+        <p class="text-gray-500">
+          {{ searchTerm() ? 'Intenta con otros términos de búsqueda' : 'Comienza agregando el primer usuario al sistema' }}
+        </p>
+      </div>
+      }
+    </div>
+  </mat-card-content>
+</mat-card>

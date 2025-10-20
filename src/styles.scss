@@ -63,3 +63,21 @@ router-outlet, main, .app-content {
   overflow-y: auto;
   background-color: #f9fafb;
 }
+
+.custom-dialog-container {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+  }
+}
+
+.success-snackbar {
+  --mdc-snackbar-container-color: #10b981;
+  --mdc-snackbar-supporting-text-color: white;
+}
+
+.error-snackbar {
+  --mdc-snackbar-container-color: #ef4444;
+  --mdc-snackbar-supporting-text-color: white;
+}

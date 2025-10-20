@@ -15,7 +15,6 @@
       <mat-form-field appearance="fill" class="w-full">
         <mat-label>Correo Electrónico</mat-label>
         <input matInput formControlName="email" type="email" placeholder/>
-        <mat-hint>Usa tu correo institucional</mat-hint>
 
         @if (form.get('email')?.hasError('required')) {
           <mat-error>

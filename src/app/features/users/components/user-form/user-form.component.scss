@@ -1,0 +1,49 @@
+.user-form-dialog {
+  padding: 0;
+  max-width: 500px;
+  width: 100%;
+
+  .dialog-header {
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .dialog-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    mat-form-field {
+      margin-bottom: 0;
+    }
+  }
+
+  .dialog-actions {
+    padding: 16px 24px 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-top: 1px solid #e5e7eb;
+
+    button {
+      min-width: 120px;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .mat-mdc-form-field-icon-prefix {
+    color: #6b7280;
+  }
+
+  .mat-mdc-select-arrow-wrapper {
+    transform: none;
+  }
+}
+
+mat-spinner {
+  ::ng-deep circle {
+    stroke: white;
+  }
+}

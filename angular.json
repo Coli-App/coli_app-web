@@ -31,7 +31,8 @@
             ],
             "styles": [
               "src/styles.scss"
-            ]
+            ],
+            "allowedCommonJsDependencies": ["lottie-web"]
           },
           "configurations": {
             "production": {

@@ -1,0 +1,43 @@
+<div class="p-6">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Gestión de Usuarios</h1>
+    <p class="text-gray-600">Administra los usuarios del sistema y sus roles</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    @for (stat of stats(); track stat.title) {
+      <app-user-card
+        [title]="stat.title"
+        [value]="stat.value"
+        [subtitle]="stat.subtitle"
+        [icon]="stat.icon">
+      </app-user-card>
+    }
+  </div>
+
+  <!-- Search and New user actions -->
+  <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+    <mat-form-field appearance="fill" class="example-form-field">
+      <mat-label>Buscar usuario...</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput type="text" [ngModel]="value()" (ngModelChange)="value.set($event)">
+      @if (value()) {
+      <button matSuffix matIconButton aria-label="Clear" (click)="value.set('')">
+        <mat-icon>close</mat-icon>
+      </button>
+      }
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="createUser()" class="bg-[#006b2c] hover:bg-[#005024]">
+      <mat-icon>add</mat-icon>
+      Nuevo Usuario
+    </button>
+  </div>
+
+  <!-- User Table -->
+  <app-user-table
+    [searchTerm]="value()"
+    (userUpdated)="onUserUpdated()">
+  </app-user-table>
+</div>
