@@ -12,11 +12,20 @@
   }
 }
 
+.example-form-field {
+  flex: 1;
+  min-width: 250px;
+}
+
 .p-6 {
   padding: 1.5rem;
 }
 
 @media (max-width: 768px) {
+  .example-form-field {
+    width: 100%;
+  }
+
   .grid {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }

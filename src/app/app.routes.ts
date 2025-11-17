@@ -4,8 +4,9 @@ import { NotFoundComponent } from '@layouts/not-found/not-found.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { loginGuard } from '@core/guards/login.guard';
 import { authGuard } from '@core/guards/auth.guard';
-import { UserListComponent } from '@features/users/pages/user-dashboard/user-list.component';
- 
+import { UserListComponent } from '@app/features/users/pages/user-management/user-management.component';
+import { SportSpacesComponent } from '@app/features/sport-spaces/pages/sport-spaces-management/sport-spaces-management.component';
+
 export const routes: Routes = [
   {
     path: '',
@@ -22,6 +23,11 @@ export const routes: Routes = [
     path: 'usuarios',
     canActivate: [authGuard],
     component: UserListComponent
+  },
+  {
+    path: 'espacios-deportivos',
+    canActivate: [authGuard],
+    component: SportSpacesComponent,
   },
   {
     path: '**',

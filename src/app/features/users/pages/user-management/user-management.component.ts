@@ -13,16 +13,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserFormComponent } from '@features/users/components/user-form/user-form.component';
 import { UserTableComponent } from '@features/users/components/user-table/user-table.component';
 import { UserCardComponent } from '@features/users/components/user-card/user-card.component';
-
-interface UserStats {
-  title: string;
-  value: number;
-  subtitle: string;
-  icon: string;
-}
+import { UserStats } from '@features/users/models/user.stats';
 
 @Component({
-  selector: 'app-user-list',
+  selector: 'app-user-management',
   imports: [
     CommonModule,
     FormsModule,
@@ -34,16 +28,16 @@ interface UserStats {
     UserTableComponent,
     UserCardComponent,
   ],
-  templateUrl: './user-list.component.html',
-  styleUrl: './user-list.component.scss',
+  templateUrl: './user-management.component.html',
+  styleUrl: './user-management.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserListComponent {
   @ViewChild(UserTableComponent) userTable!: UserTableComponent;
-  
+
   constructor(private dialog: MatDialog, private snackBar: MatSnackBar) {}
 
-  value = signal('');
+  searchUserValue = signal('');
   usersData = signal<any[]>([]);
 
   stats = computed<UserStats[]>(() => {
@@ -52,7 +46,7 @@ export class UserListComponent {
     const totalEstudiantes = users.filter(u => u.rol === 'Estudiante').length;
     const totalEntrenadores = users.filter(u => u.rol === 'Entrenador').length;
     const totalAdministradores = users.filter(u => u.rol === 'Administrador').length;
-    
+
     return [
       {
         title: 'Total Usuarios',
@@ -82,7 +76,7 @@ export class UserListComponent {
   });
 
   clearSearch() {
-    this.value.set('');
+    this.searchUserValue.set('');
   }
 
   createUser() {

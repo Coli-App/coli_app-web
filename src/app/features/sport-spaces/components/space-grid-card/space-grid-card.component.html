@@ -1,0 +1,49 @@
+<mat-card class="space-card">
+  <div class="card-image-container">
+    <img [src]="space.imageUrl" [alt]="space.name" class="card-image">
+    <div class="status-badge" [class.active]="space.isActive" [class.inactive]="!space.isActive">
+      {{ space.isActive ? 'Activo' : 'Inactivo' }}
+    </div>
+  </div>
+
+  <mat-card-content class="card-content">
+    <div class="card-header">
+      <h3 class="space-title">{{ space.name }}</h3>
+      <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="onView()">
+          <mat-icon>visibility</mat-icon>
+          <span>Ver detalles</span>
+        </button>
+        <button mat-menu-item (click)="onDelete()">
+          <mat-icon>delete</mat-icon>
+          <span>Eliminar</span>
+        </button>
+      </mat-menu>
+    </div>
+
+    <div class="space-type">
+      <mat-chip class="type-chip">{{ space.location }}</mat-chip>
+    </div>
+
+    <p class="space-description">{{ space.description }}</p>
+
+    <div class="space-info">
+      <div class="info-item">
+        <mat-icon>group</mat-icon>
+        <span>Capacidad: {{ space.capacity }} personas</span>
+      </div>
+    </div>
+
+    <div class="sports-container" *ngIf="space.sports && space.sports.length > 0">
+      <div class="sports-label">Deportes disponibles:</div>
+      <div class="sports-chips">
+        <mat-chip *ngFor="let sport of space.sports" class="sport-chip">
+          {{ sport }}
+        </mat-chip>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
