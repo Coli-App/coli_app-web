@@ -15,8 +15,7 @@ export class UserService {
   model = 'user';
 
   constructor(
-    private http: HttpClient,
-    private router: Router
+    private http: HttpClient
   ) { }
 
   createUser(data: CreateUser): Observable<UserResponse> {

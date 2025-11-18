@@ -9,6 +9,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { UserState } from '@app/state/UserState';
 import { AuthService } from '@app/core/services/auth/auth.service';
 import { TokenService } from '@app/core/services/auth/token.service';
+import { ROLE_LABELS } from '@app/core/consts/user.roles.consts';
 
 @Component({
   selector: 'app-header',
@@ -35,9 +36,13 @@ export class HeaderComponent {
 
   readonly user = computed(() => {
     const current = this.userState.currentUser();
+
+    const roleKey = current?.role ?? 'admin';
+    const roleLabel = ROLE_LABELS[roleKey] ?? 'Rol desconocido';
+
     return {
       email: current?.email ?? 'Usuario',
-      role: current?.role ?? 'Administrador',
+      role: roleLabel
     };
   });
 

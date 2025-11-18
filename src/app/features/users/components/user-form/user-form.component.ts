@@ -84,31 +84,26 @@ export class UserFormComponent {
 
         const formValue = this.userForm.value;
 
-        // Verificar cambios en name
         if (formValue.name && formValue.name.trim() !== this.data.user?.name) {
           updateData.name = formValue.name.trim();
           hasChanges = true;
         }
 
-        // Verificar cambios en email
         if (formValue.email && formValue.email.trim() !== this.data.user?.email) {
           updateData.email = formValue.email.trim();
           hasChanges = true;
         }
 
-        // Verificar cambios en rol
         if (formValue.rol && formValue.rol !== this.data.user?.rol) {
           updateData.rol = formValue.rol;
           hasChanges = true;
         }
 
-        // Verificar si se ingresó nueva contraseña
         if (formValue.password && formValue.password.trim() !== '') {
           updateData.password = formValue.password.trim();
           hasChanges = true;
         }
 
-        // Solo hacer la petición si hay cambios
         if (hasChanges) {
           console.log('Datos a actualizar:', updateData);
           this.userService.updateUser(this.userId, updateData).subscribe({
@@ -130,7 +125,6 @@ export class UserFormComponent {
             },
           });
         } else {
-          // No hay cambios, cerrar el dialog sin hacer petición
           this.isLoading.set(false);
           this.snackBar.open('No se detectaron cambios', 'Cerrar', {
             duration: 2000,
@@ -206,7 +200,7 @@ export class UserFormComponent {
       name: 'Nombre',
       email: 'Email',
       password: 'Contraseña',
-      rol: 'Rol',
+      rol: 'Rol', 
     };
     return labels[field] || field;
   }

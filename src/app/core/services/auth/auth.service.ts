@@ -29,6 +29,13 @@ export class AuthService {
             response.data.session.refresh_token
           );
 
+          const userData = {
+            name: response.data.user.email.split('@')[0], // O usar otro campo si lo tienes
+            email: response.data.user.email,
+            role: response.data.user.role // Este es el role correcto que viene del backend
+          };
+          localStorage.setItem('user_data', JSON.stringify(userData));
+
           setTimeout(() => {
             this.router.navigate(['/dashboard']);
           }, 100);

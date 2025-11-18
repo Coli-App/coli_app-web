@@ -11,9 +11,9 @@ const USER_DATA_KEY = 'user_data';
 @Injectable({ providedIn: 'root' })
 export class UserState {
   private tokenService = inject(TokenService);
-  
+
   private readonly _currentUser = signal<User | null>(null);
-  
+
   public readonly currentUser = this._currentUser.asReadonly();
 
   public readonly isAuthenticated = computed(() => !!this.currentUser());
@@ -25,7 +25,6 @@ export class UserState {
     effect(() => {
       const token = this.tokenService.getAccessToken();
       if (token && !this.currentUser()) {
-  
         this.loadUserFromToken();
       } else if (!token && this.currentUser()) {
         this.clearUser();
@@ -48,7 +47,7 @@ export class UserState {
     try {
       const token = this.tokenService.getAccessToken();
       const isExpired = this.tokenService.isTokenExpired();
-      
+
       if (!token || isExpired) {
         this.clearUser();
         return;
@@ -59,7 +58,6 @@ export class UserState {
         try {
           const parsedData = JSON.parse(userData);
           this._currentUser.set(parsedData);
-          console.log('User restored from localStorage');
           return;
         } catch (e) {
           console.warn('Invalid userData in localStorage, removing...');
@@ -68,15 +66,15 @@ export class UserState {
       }
 
       const decodedToken = this.tokenService.decodeToken();
-      
-      if (decodedToken?.email && decodedToken?.role) {
+
+      if (decodedToken?.email) {
         const user: User = {
           name: decodedToken.name || decodedToken.sub || 'Usuario',
           email: decodedToken.email,
-          role: decodedToken.role,
+          role: decodedToken.role || 'user',
         };
         this.setUser(user);
-        console.log('User loaded from token');
+        console.log('User loaded from token (fallback)');
       } else {
         console.log('No valid user data in token');
         this.clearUser();

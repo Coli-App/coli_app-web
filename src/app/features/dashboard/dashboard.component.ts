@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, signal, inject, OnInit } from '@angular/core';
 import { ActionCardComponent } from '@features/dashboard/components/action-card/action-card.component';
-import { StatCardComponent } from './components/stat-card/stat-card.component';
+import { StatCardComponent } from '@features/dashboard/components/stat-card/stat-card.component';
 import { UserState } from '@app/state/UserState';
 import { UserService } from '@features/users/services/user.service';
+import { ROLE_LABELS } from '@app/core/consts/user.roles.consts';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,9 +20,13 @@ export class DashboardComponent implements OnInit {
 
   readonly user = computed(() => {
     const current = this.userState.currentUser();
+
+    const roleKey = current?.role ?? 'admin';
+    const roleLabel = ROLE_LABELS[roleKey] ?? 'Rol desconocido';
+
     return {
       email: current?.email ?? 'Usuario',
-      role: current?.role ?? 'Administrador'
+      role: roleLabel
     };
   });
 

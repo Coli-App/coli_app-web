@@ -1,3 +1,4 @@
+import { SportsService } from './../../services/sports.service';
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -43,28 +44,28 @@ export class SpaceFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   spaceForm!: FormGroup;
-  isEditMode = signal(false);
   loading = signal(false);
   imagePreview = signal<string | null>(null);
   isDragOver = false;
   selectedFile: File | null = null;
+  availableSports = signal<AvailableSport[]>([]);
 
-  availableSports: AvailableSport[] = [
-    { id: '1', name: 'Fútbol' },
-    { id: '2', name: 'Baloncesto' },
-    { id: '3', name: 'Voleibol' },
-    { id: '4', name: 'Tenis' },
-    { id: '5', name: 'Natación' },
-    { id: '6', name: 'Atletismo' }
-  ];
+  constructor (private sportsService: SportsService) {}
 
   ngOnInit(): void {
-    this.isEditMode.set(this.data?.mode === 'edit');
     this.initForm();
+    this.loadSports();
+  }
 
-    if (this.isEditMode() && this.data.space) {
-      this.loadSpaceData(this.data.space);
-    }
+  loadSports(): void {
+    this.sportsService.getSportsList().subscribe({
+      next: (sports: AvailableSport[]) => {
+        this.availableSports.set(sports);
+      },
+      error: (err) => {
+        console.error('Error al obtener los deportes:', err);
+      }
+    })
   }
 
   private initForm(): void {
@@ -77,22 +78,6 @@ export class SpaceFormComponent implements OnInit {
       isActive: [true],
       sportIds: [[], Validators.required]
     });
-  }
-
-  private loadSpaceData(space: any): void {
-    this.spaceForm.patchValue({
-      name: space.name,
-      location: space.location,
-      description: space.description,
-      capacity: space.capacity,
-      imageUrl: space.imageUrl,
-      isActive: space.isActive,
-      sportIds: space.sportIds || []
-    });
-
-    if (space.imageUrl) {
-      this.imagePreview.set(space.imageUrl);
-    }
   }
 
   onSubmit(): void {

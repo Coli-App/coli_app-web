@@ -1,10 +1,10 @@
 <div class="space-form-dialog">
   <div class="dialog-header">
     <h2 class="text-xl font-semibold text-gray-900 mb-1">
-      {{ isEditMode() ? 'Editar Espacio Deportivo' : 'Nuevo Espacio Deportivo' }}
+      {{ 'Nuevo Espacio Deportivo' }}
     </h2>
     <p class="text-sm text-gray-600">
-      {{ isEditMode() ? 'Actualiza la información del espacio' : 'Completa la información para crear un nuevo espacio deportivo' }}
+      {{'Completa la información para crear un nuevo espacio deportivo' }}
     </p>
   </div>
 
@@ -15,7 +15,7 @@
       <input matInput formControlName="name" placeholder="Ej: Cancha de Fútbol Principal">
       <mat-icon matPrefix>label</mat-icon>
       @if (spaceForm.get('name')?.invalid && spaceForm.get('name')?.touched) {
-        <mat-error>{{ getErrorMessage('name') }}</mat-error>
+      <mat-error>{{ getErrorMessage('name') }}</mat-error>
       }
     </mat-form-field>
 
@@ -25,21 +25,18 @@
       <input matInput formControlName="location" placeholder="Ej: Sector Norte, Edificio Deportes">
       <mat-icon matPrefix>location_on</mat-icon>
       @if (spaceForm.get('location')?.invalid && spaceForm.get('location')?.touched) {
-        <mat-error>{{ getErrorMessage('location') }}</mat-error>
+      <mat-error>{{ getErrorMessage('location') }}</mat-error>
       }
     </mat-form-field>
 
     <!-- Space Description -->
     <mat-form-field appearance="fill" class="w-full">
       <mat-label>Descripción</mat-label>
-      <textarea
-        matInput
-        formControlName="description"
-        rows="3"
+      <textarea matInput formControlName="description" rows="3"
         placeholder="Describe las características del espacio"></textarea>
       <mat-icon matPrefix>description</mat-icon>
       @if (spaceForm.get('description')?.invalid && spaceForm.get('description')?.touched) {
-        <mat-error>{{ getErrorMessage('description') }}</mat-error>
+      <mat-error>{{ getErrorMessage('description') }}</mat-error>
       }
     </mat-form-field>
 
@@ -49,48 +46,34 @@
       <input matInput type="number" formControlName="capacity" placeholder="Ej: 50">
       <mat-icon matPrefix>group</mat-icon>
       @if (spaceForm.get('capacity')?.invalid && spaceForm.get('capacity')?.touched) {
-        <mat-error>{{ getErrorMessage('capacity') }}</mat-error>
+      <mat-error>{{ getErrorMessage('capacity') }}</mat-error>
       }
     </mat-form-field>
 
     <!-- File Upload with Drag & Drop -->
     <div class="file-upload-section">
       <label class="file-upload-label">Imagen del espacio</label>
-      <div
-        class="dropzone"
-        [class.dragover]="isDragOver"
-        (drop)="onFileDrop($event)"
-        (dragover)="onDragOver($event)"
-        (dragleave)="onDragLeave($event)"
-        (click)="fileInput.click()">
-        <input
-          #fileInput
-          type="file"
-          accept="image/*"
-          style="display: none"
-          (change)="onFileSelected($event)">
+      <div class="dropzone" [class.dragover]="isDragOver" (drop)="onFileDrop($event)" (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)" (click)="fileInput.click()">
+        <input #fileInput type="file" accept="image/*" style="display: none" (change)="onFileSelected($event)">
 
         @if (imagePreview()) {
-          <div class="preview-container">
-            <img [src]="imagePreview()" alt="Preview" class="preview-image">
-            <button
-              type="button"
-              mat-icon-button
-              class="remove-image-btn"
-              (click)="removeImage($event)">
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
+        <div class="preview-container">
+          <img [src]="imagePreview()" alt="Preview" class="preview-image">
+          <button type="button" mat-icon-button class="remove-image-btn" (click)="removeImage($event)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
         } @else {
-          <div class="upload-placeholder">
-            <mat-icon class="upload-icon">cloud_upload</mat-icon>
-            <p class="upload-text">Arrastra una imagen aquí o haz clic para seleccionar</p>
-            <p class="upload-hint">PNG, JPG hasta 5MB</p>
-          </div>
+        <div class="upload-placeholder">
+          <mat-icon class="upload-icon">cloud_upload</mat-icon>
+          <p class="upload-text">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          <p class="upload-hint">PNG, JPG hasta 5MB</p>
+        </div>
         }
       </div>
       @if (spaceForm.get('imageUrl')?.invalid && spaceForm.get('imageUrl')?.touched) {
-        <span class="error-text">La imagen es requerida</span>
+      <span class="error-text">La imagen es requerida</span>
       }
     </div>
 
@@ -99,12 +82,15 @@
       <mat-label>Deportes disponibles</mat-label>
       <mat-icon matPrefix>sports_soccer</mat-icon>
       <mat-select formControlName="sportIds" multiple>
-        <mat-option *ngFor="let sport of availableSports" [value]="sport.id">
+        @for (sport of availableSports(); track sport.id) {
+        <mat-option [value]="sport.id">
           {{ sport.name }}
         </mat-option>
+        }
       </mat-select>
+
       @if (spaceForm.get('sportIds')?.invalid && spaceForm.get('sportIds')?.touched) {
-        <mat-error>{{ getErrorMessage('sportIds') }}</mat-error>
+      <mat-error>{{ getErrorMessage('sportIds') }}</mat-error>
       }
     </mat-form-field>
 
@@ -120,27 +106,18 @@
   </form>
 
   <div class="dialog-actions">
-    <button
-      mat-button
-      type="button"
-      (click)="onCancel()"
-      [disabled]="loading()">
+    <button mat-button type="button" (click)="onCancel()" [disabled]="loading()">
       Cancelar
     </button>
 
-    <button
-      mat-raised-button
-      color="primary"
-      type="submit"
-      (click)="onSubmit()"
-      [disabled]="loading() || spaceForm.invalid"
-      class="bg-[#006b2c] hover:bg-[#005024]">
+    <button mat-raised-button color="primary" type="submit" (click)="onSubmit()"
+      [disabled]="loading() || spaceForm.invalid" class="bg-[#006b2c] hover:bg-[#005024]">
       @if (loading()) {
-        <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+      <mat-spinner diameter="20" class="mr-2"></mat-spinner>
       } @else {
-        <mat-icon>{{ isEditMode() ? 'save' : 'add' }}</mat-icon>
+      <mat-icon>{{ 'add' }}</mat-icon>
       }
-      {{ loading() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Crear Espacio') }}
+      {{ loading() ? 'Guardando...' : ('Crear Espacio') }}
     </button>
   </div>
 </div>
