@@ -1,5 +1,5 @@
-import { SportsService } from './../../services/sports.service';
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { SportsService } from '@features/sport-spaces/services/sports.service';
+import { Component, inject, signal, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -13,6 +13,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CreateSportSpace } from '@features/sport-spaces/models/create-sport-space';
 import { AvailableSport } from '@features/sport-spaces/models/available.sport';
+import { SportSpacesService } from '@features/sport-spaces/services/sport-spaces.service';
+import { FilePickerComponent } from '@core/shared/components/atoms/file-picker/file-picker.component';
 
 export interface SpaceFormData {
   mode: 'create' | 'edit';
@@ -33,24 +35,25 @@ export interface SpaceFormData {
     MatSelectModule,
     MatSlideToggleModule,
     MatChipsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    FilePickerComponent,
   ],
   templateUrl: './space-form.component.html',
-  styleUrl: './space-form.component.scss'
+  styleUrl: './space-form.component.scss',
 })
 export class SpaceFormComponent implements OnInit {
+  @ViewChild(FilePickerComponent) filePicker!: FilePickerComponent;
+
   private readonly dialogRef = inject(MatDialogRef<SpaceFormComponent>);
   private readonly data = inject<SpaceFormData>(MAT_DIALOG_DATA);
   private readonly fb = inject(FormBuilder);
 
   spaceForm!: FormGroup;
   loading = signal(false);
-  imagePreview = signal<string | null>(null);
-  isDragOver = false;
   selectedFile: File | null = null;
   availableSports = signal<AvailableSport[]>([]);
 
-  constructor (private sportsService: SportsService) {}
+  constructor(private sportsService: SportsService, private spacesService: SportSpacesService) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -64,8 +67,8 @@ export class SpaceFormComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al obtener los deportes:', err);
-      }
-    })
+      },
+    });
   }
 
   private initForm(): void {
@@ -74,14 +77,18 @@ export class SpaceFormComponent implements OnInit {
       location: ['', Validators.required],
       description: ['', [Validators.required, Validators.minLength(10)]],
       capacity: ['', [Validators.required, Validators.min(1)]],
-      imageUrl: ['', Validators.required],
-      isActive: [true],
-      sportIds: [[], Validators.required]
+      image: ['', Validators.required],
+      state: [true, Validators.required],
+      sportIds: [[], Validators.required],
+    });
+
+    this.spaceForm.get('state')!.valueChanges.subscribe((value) => {
+      console.log(value ? 'Activo' : 'Inactivo');
     });
   }
 
   onSubmit(): void {
-    if (this.spaceForm.invalid) {
+    if (this.spaceForm.invalid || !this.selectedFile) {
       this.spaceForm.markAllAsTouched();
       return;
     }
@@ -89,20 +96,26 @@ export class SpaceFormComponent implements OnInit {
     this.loading.set(true);
 
     const formValue = this.spaceForm.value;
-    const spaceData: CreateSportSpace = {
+
+    const dto: CreateSportSpace = {
       name: formValue.name,
-      location: formValue.location,
+      ubication: formValue.location,
       description: formValue.description,
       capacity: formValue.capacity,
-      image: formValue.imageUrl,
-      isActive: formValue.isActive,
-      sportIds: formValue.sportIds
+      state: formValue.state ? "Activo" : "Inactivo",
+      sports: formValue.sportIds,
     };
 
-    setTimeout(() => {
-      this.loading.set(false);
-      this.dialogRef.close({ success: true, data: spaceData });
-    }, 1000);
+    this.spacesService.createSpace(dto, this.selectedFile!).subscribe({
+      next: (resp) => {
+        this.loading.set(false);
+        this.dialogRef.close({ success: true, data: resp });
+      },
+      error: (err) => {
+        this.loading.set(false);
+        console.error('Error creando espacio', err);
+      },
+    });
   }
 
   onCancel(): void {
@@ -126,65 +139,15 @@ export class SpaceFormComponent implements OnInit {
   }
 
   // File Upload Methods
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragOver = true;
-  }
-
-  onDragLeave(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragOver = false;
-  }
-
-  onFileDrop(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDragOver = false;
-
-    const files = event.dataTransfer?.files;
-    if (files && files.length > 0) {
-      this.handleFile(files[0]);
-    }
-  }
-
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.handleFile(input.files[0]);
-    }
-  }
-
-  private handleFile(file: File): void {
-    if (!file.type.startsWith('image/')) {
-      alert('Por favor selecciona un archivo de imagen válido');
-      return;
-    }
-
-    const maxSize = 5 * 1024 * 1024;
-    if (file.size > maxSize) {
-      alert('La imagen no debe superar los 5MB');
-      return;
-    }
-
+  onFileSelected(file: File): void {
     this.selectedFile = file;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      this.imagePreview.set(result);
-      this.spaceForm.patchValue({ imageUrl: result });
-      this.spaceForm.get('imageUrl')?.markAsTouched();
-    };
-    reader.readAsDataURL(file);
+    this.spaceForm.patchValue({ image: file });
+    this.spaceForm.get('image')?.markAsTouched();
   }
 
-  removeImage(event: Event): void {
-    event.stopPropagation();
-    event.preventDefault();
+  onFileRemoved(): void {
     this.selectedFile = null;
-    this.imagePreview.set(null);
-    this.spaceForm.patchValue({ imageUrl: '' });
+    this.spaceForm.patchValue({ image: '' });
+    this.spaceForm.get('image')?.markAsTouched();
   }
 }

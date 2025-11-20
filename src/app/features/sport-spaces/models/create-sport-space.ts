@@ -1,9 +1,8 @@
 export interface CreateSportSpace {
   name: string;
-  location: string;
+  ubication: string;
   description: string;
   capacity: number;
-  image: File;
-  isActive: boolean;
-  sportIds: string[];
+  state: string;
+  sports: string[];
 }

@@ -39,13 +39,13 @@
     <mat-form-field appearance="fill" class="w-full">
       <mat-label>Rol del usuario</mat-label>
       <mat-icon matPrefix>badge</mat-icon>
-      <mat-select formControlName="rol" placeholder="Selecciona un rol">
+      <mat-select formControlName="role" placeholder="Selecciona un rol">
         @for (role of roles; track role.value) {
           <mat-option [value]="role.value">{{ role.label }}</mat-option>
         }
       </mat-select>
-      @if (userForm.get('rol')?.invalid && userForm.get('rol')?.touched) {
-        <mat-error>{{ getErrorMessage('rol') }}</mat-error>
+      @if (userForm.get('role')?.invalid && userForm.get('role')?.touched) {
+        <mat-error>{{ getErrorMessage('role') }}</mat-error>
       }
     </mat-form-field>
 

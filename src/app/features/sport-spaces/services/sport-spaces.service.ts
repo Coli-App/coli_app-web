@@ -1,17 +1,32 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
+import { CreateSportSpace } from '@features/sport-spaces/models/create-sport-space';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SportSpacesService {
   apiUrl = environment.apiUrl;
   model = 'spaces';
 
-  constructor(http: HttpClient) { }
+  constructor(private http: HttpClient) {}
+
+  createSpace(space: CreateSportSpace, image: File) {
+    const formData = new FormData();
+
+    formData.append('data', JSON.stringify(space));
+    formData.append('image', image);
+
+    return this.http.post(`${this.getUrl()}/create-space`, formData);
+  }
+
+  getAllSpaces() {
+    return this.http.get(`${this.getUrl()}`);
+  }
 
   getUrl() {
     return `${this.apiUrl}/${this.model}`;
   }
 }
+

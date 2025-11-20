@@ -140,7 +140,7 @@ export class UserTableComponent {
           id: user.id,
           name: user.nombre,
           email: user.correo,
-          rol: this.mapRoleToAPI(user.rol)
+          role: this.mapRoleToAPI(user.rol)
         }
       } as UserFormData
     });

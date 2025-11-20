@@ -1,0 +1,40 @@
+<div class="file-picker-container">
+  <div
+    class="dropzone"
+    [class.dragover]="isDragOver()"
+    [class.disabled]="disabled()"
+    (drop)="onFileDrop($event)"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (click)="triggerFileInput()">
+
+    <input
+      #fileInput
+      type="file"
+      [accept]="accept()"
+      [disabled]="disabled()"
+      style="display: none"
+      (change)="onFileSelected($event)">
+
+    @if (imagePreview()) {
+      <div class="preview-container">
+        <img [src]="imagePreview()" alt="Preview" class="preview-image">
+        @if (!disabled()) {
+          <button
+            type="button"
+            mat-icon-button
+            class="remove-image-btn"
+            (click)="removeImage($event)">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+    } @else {
+      <div class="upload-placeholder">
+        <mat-icon class="upload-icon">cloud_upload</mat-icon>
+        <p class="upload-text">{{ placeholder() }}</p>
+        <p class="upload-hint">{{ hint() }}</p>
+      </div>
+    }
+  </div>
+</div>
