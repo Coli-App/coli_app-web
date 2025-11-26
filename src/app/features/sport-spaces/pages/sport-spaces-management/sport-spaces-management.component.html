@@ -53,8 +53,7 @@
       @for (space of filteredSpaces(); track space.id) {
         <app-space-grid-card
           [space]="space"
-          (view)="onViewSpace($event)"
-          (delete)="onDeleteSpace($event)">
+          (view)="onViewSpace($event)">
         </app-space-grid-card>
       }
     }

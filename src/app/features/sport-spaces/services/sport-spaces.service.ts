@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
 import { CreateSportSpace } from '@features/sport-spaces/models/create-sport-space';
+import { Observable } from 'rxjs';
+import { SportSpacesResponse } from '../models/sport-spaces.response';
 
 @Injectable({
   providedIn: 'root',
@@ -21,8 +23,8 @@ export class SportSpacesService {
     return this.http.post(`${this.getUrl()}/create-space`, formData);
   }
 
-  getAllSpaces() {
-    return this.http.get(`${this.getUrl()}`);
+  getAllSpaces(): Observable<SportSpacesResponse[]> {
+    return this.http.get<SportSpacesResponse[]>(`${this.getUrl()}/list-spaces`);
   }
 
   getUrl() {

@@ -69,9 +69,9 @@ export class UserState {
 
       if (decodedToken?.email) {
         const user: User = {
-          name: decodedToken.name || decodedToken.sub || 'Usuario',
+          name: decodedToken.name || decodedToken.email?.split('@')[0] || 'Usuario',
           email: decodedToken.email,
-          role: decodedToken.role || 'user',
+          role: decodedToken.app_metadata?.user_role || 'user',
         };
         this.setUser(user);
         console.log('User loaded from token (fallback)');

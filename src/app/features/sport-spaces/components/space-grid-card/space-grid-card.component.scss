@@ -75,16 +75,44 @@
       }
     }
 
-    .space-type {
+    .space-ubication {
       margin-bottom: 12px;
+      width: 100%;
+      overflow: hidden;
 
-      .type-chip {
+      .space-ubication-chip {
         background-color: #e0e7ff !important;
         color: #4f46e5 !important;
         font-size: 12px;
         font-weight: 500;
-        height: 24px;
+        height: auto !important;
+        min-height: 24px;
+        max-width: 100% !important;
+        width: fit-content !important;
+        padding: 6px 12px !important;
         border: none !important;
+        white-space: normal !important;
+        line-height: 1.4;
+        display: inline-flex !important;
+        align-items: center !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box;
+
+        ::ng-deep .mdc-evolution-chip__cell,
+        ::ng-deep .mdc-evolution-chip__action {
+          overflow: visible !important;
+          white-space: normal !important;
+        }
+
+        ::ng-deep .mat-mdc-chip-action-label {
+          white-space: normal !important;
+          overflow: visible !important;
+          word-break: break-word !important;
+          line-height: 1.4;
+          padding: 0 !important;
+        }
       }
     }
 

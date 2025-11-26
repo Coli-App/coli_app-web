@@ -1,12 +1,12 @@
 import { AvailableSport } from "./available.sport";
 
-export interface SportSpaceCard {
+export interface SportSpacesResponse {
   id: string;
   name: string;
+  state: string;
   ubication: string;
   description: string;
   capacity: number;
   imageUrl: string;
-  state: string;
   sports: AvailableSport[];
 }
