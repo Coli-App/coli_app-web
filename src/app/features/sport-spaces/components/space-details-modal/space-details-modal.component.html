@@ -1,0 +1,143 @@
+<div class="space-details-modal">
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando detalles del espacio...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <mat-icon class="error-icon">error</mat-icon>
+      <h3>Error al cargar los detalles</h3>
+      <p>No se pudo obtener la información del espacio deportivo</p>
+      <button mat-raised-button color="primary" (click)="onClose()">
+        Cerrar
+      </button>
+    </div>
+  } @else if (space) {
+    <div class="dialog-header">
+      <div class="header-content">
+        <h2 class="text-2xl font-semibold">
+          <mat-icon>info</mat-icon>
+          Detalles del Espacio
+        </h2>
+        <button mat-icon-button (click)="onClose()" class="close-button">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="dialog-content">
+      <!-- Imagen del espacio -->
+      @if (space.imageUrl) {
+        <div class="space-image-container">
+          <img [src]="space.imageUrl" [alt]="space.name" class="space-image">
+          <div class="status-badge" [class.active]="space.state === 'Activo'">
+            {{ space.state }}
+          </div>
+        </div>
+      }
+
+      <!-- Información básica -->
+      <div class="info-section">
+        <h3 class="section-title">
+          <mat-icon>label</mat-icon>
+          Información General
+        </h3>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Nombre:</span>
+            <span class="info-value">{{ space.name }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Ubicación:</span>
+            <span class="info-value">{{ space.ubication }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Capacidad:</span>
+            <span class="info-value">
+              <mat-icon class="inline-icon">group</mat-icon>
+              {{ space.capacity }} personas
+            </span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Estado:</span>
+            <mat-chip [class.chip-active]="space.state === 'Activo'" 
+                      [class.chip-inactive]="space.state === 'Inactivo'">
+              {{ space.state }}
+            </mat-chip>
+          </div>
+        </div>
+
+        @if (space.description) {
+          <div class="description-section">
+            <span class="info-label">Descripción:</span>
+            <p class="description-text">{{ space.description }}</p>
+          </div>
+        }
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Deportes disponibles -->
+      @if (space.sports && space.sports.length > 0) {
+        <div class="info-section">
+          <h3 class="section-title">
+            <mat-icon>sports_soccer</mat-icon>
+            Deportes Disponibles
+          </h3>
+          <div class="sports-chips">
+            @for (sport of space.sports; track sport.id) {
+              <mat-chip class="sport-chip">{{ sport.name }}</mat-chip>
+            }
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+      }
+
+      <!-- Horarios -->
+      @if (space.schedule && space.schedule.length > 0) {
+        <div class="info-section">
+          <h3 class="section-title">
+            <mat-icon>schedule</mat-icon>
+            Horarios de Disponibilidad
+          </h3>
+          
+          <div class="schedule-list">
+            @for (scheduleItem of getSortedSchedule(); track scheduleItem.id || scheduleItem.day) {
+              <div class="schedule-item" [class.closed]="scheduleItem.closed">
+                <div class="schedule-day">
+                  <mat-icon>{{ scheduleItem.closed ? 'cancel' : 'check_circle' }}</mat-icon>
+                  <span class="day-name">{{ scheduleItem.day }}</span>
+                </div>
+                <div class="schedule-time">
+                  @if (scheduleItem.closed) {
+                    <span class="closed-text">Cerrado</span>
+                  } @else {
+                    <span class="time-range">
+                      <mat-icon class="time-icon">login</mat-icon>
+                      {{ formatTime(scheduleItem.time_start) }}
+                      <span class="separator">-</span>
+                      <mat-icon class="time-icon">logout</mat-icon>
+                      {{ formatTime(scheduleItem.time_end) }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="dialog-actions">
+      <button mat-button (click)="onClose()">
+        Cerrar
+      </button>
+    </div>
+  }
+</div>

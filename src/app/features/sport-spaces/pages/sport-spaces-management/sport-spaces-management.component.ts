@@ -13,6 +13,7 @@ import {
   SpaceFormComponent,
   SpaceFormData,
 } from '@features/sport-spaces/components/space-form/space-form.component';
+import { SpaceDetailsModalComponent } from '@features/sport-spaces/components/space-details-modal/space-details-modal.component';
 import { SportSpaceStats } from '@features/sport-spaces/models/sport-space.stats';
 import type { SportSpaceCard } from '@app/features/sport-spaces/models/sport-space-card';
 import { SportSpacesService } from '@app/features/sport-spaces/services/sport-spaces.service';
@@ -121,7 +122,55 @@ export class SportSpacesComponent {
   }
 
   onViewSpace(space: SportSpaceCard): void {
-    console.log('Ver espacio:', space);
+    const dialogRef = this.dialog.open(SpaceDetailsModalComponent, {
+      width: '800px',
+      maxWidth: '95vw',
+      data: { spaceId: space.id },
+    });
+  }
+
+  onEditSpace(space: SportSpaceCard): void {
+    const dialogRef = this.dialog.open(SpaceFormComponent, {
+      width: '600px',
+      maxWidth: '95vw',
+      disableClose: true,
+      autoFocus: true,
+      data: {
+        mode: 'edit',
+        space: space,
+      } as SpaceFormData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.success) {
+        this.snackBar.open('Espacio actualizado exitosamente', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar'],
+        });
+        this.loadSportSpaces();
+      }
+    });
+  }
+
+  onDeleteSpace(space: SportSpaceCard): void {
+    if (confirm(`¿Estás seguro de que deseas eliminar el espacio "${space.name}"?`)) {
+      this.spacesService.deleteSpace(space.id).subscribe({
+        next: () => {
+          this.snackBar.open('Espacio eliminado exitosamente', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['success-snackbar'],
+          });
+          this.loadSportSpaces();
+        },
+        error: (err) => {
+          console.error('Error al eliminar el espacio:', err);
+          this.snackBar.open('Error al eliminar el espacio', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['error-snackbar'],
+          });
+        },
+      });
+    }
   }
 
   loadSportSpaces(): void {

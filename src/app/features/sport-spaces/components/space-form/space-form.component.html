@@ -1,10 +1,10 @@
 <div class="space-form-dialog">
   <div class="dialog-header">
     <h2 class="text-xl font-semibold text-gray-900 mb-1">
-      {{ 'Nuevo Espacio Deportivo' }}
+      {{ data.mode === 'edit' ? 'Editar Espacio Deportivo' : 'Nuevo Espacio Deportivo' }}
     </h2>
     <p class="text-sm text-gray-600">
-      {{'Completa la información para crear un nuevo espacio deportivo' }}
+      {{ data.mode === 'edit' ? 'Actualiza la información del espacio deportivo' : 'Completa la información para crear un nuevo espacio deportivo' }}
     </p>
   </div>
 
@@ -94,6 +94,29 @@
         </span>
       </mat-slide-toggle>
     </div>
+
+    <!-- Schedule Configuration Button -->
+    @if (data.mode === 'create') {
+    <div class="schedule-section">
+      <label class="schedule-label">
+        <mat-icon>schedule</mat-icon>
+        Horario de disponibilidad *
+      </label>
+      <button 
+        mat-raised-button 
+        type="button" 
+        class="schedule-button"
+        (click)="openScheduleModal()"
+        [disabled]="loading()">
+        <mat-icon>{{ scheduleConfigured() ? 'edit_calendar' : 'add_circle' }}</mat-icon>
+        {{ scheduleConfigured() ? 'Modificar Horario' : 'Definir Horario' }}
+      </button>
+      <div class="schedule-info" [class.configured]="scheduleConfigured()">
+        <mat-icon>{{ scheduleConfigured() ? 'check_circle' : 'info' }}</mat-icon>
+        <span>{{ getScheduleSummary() }}</span>
+      </div>
+    </div>
+    }
   </form>
 
   <div class="dialog-actions">
@@ -102,13 +125,13 @@
     </button>
 
     <button mat-raised-button color="primary" type="submit" (click)="onSubmit()"
-      [disabled]="loading() || spaceForm.invalid" class="bg-[#006b2c] hover:bg-[#005024]">
+      [disabled]="loading() || spaceForm.invalid" class="bg-[#1DC48F] hover:bg-[#17a87a]">
       @if (loading()) {
       <mat-spinner diameter="20" class="mr-2"></mat-spinner>
       } @else {
-      <mat-icon>{{ 'add' }}</mat-icon>
+      <mat-icon>{{ data.mode === 'edit' ? 'save' : 'add' }}</mat-icon>
       }
-      {{ loading() ? 'Guardando...' : ('Crear Espacio') }}
+      {{ loading() ? 'Guardando...' : (data.mode === 'edit' ? 'Actualizar Espacio' : 'Crear Espacio') }}
     </button>
   </div>
 </div>

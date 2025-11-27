@@ -26,6 +26,8 @@ import { SportSpacesResponse } from '@features/sport-spaces/models/sport-spaces.
 export class SpaceGridCardComponent{
   @Input() space!: SportSpaceCard;
   @Output() view = new EventEmitter<SportSpaceCard>();
+  @Output() edit = new EventEmitter<SportSpaceCard>();
+  @Output() delete = new EventEmitter<SportSpaceCard>();
 
   constructor() {}
 
@@ -33,4 +35,11 @@ export class SpaceGridCardComponent{
     this.view.emit(this.space);
   }
 
+  onEdit(): void {
+    this.edit.emit(this.space);
+  }
+
+  onDelete(): void {
+    this.delete.emit(this.space);
+  }
 }

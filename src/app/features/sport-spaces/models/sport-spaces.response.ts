@@ -1,7 +1,7 @@
 import { AvailableSport } from "./available.sport";
 
 export interface SportSpacesResponse {
-  id: string;
+  id: number;
   name: string;
   state: string;
   ubication: string;

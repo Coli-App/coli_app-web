@@ -1,7 +1,7 @@
 import { AvailableSport } from "./available.sport";
 
 export interface SportSpaceCard {
-  id: string;
+  id: number;
   name: string;
   ubication: string;
   description: string;

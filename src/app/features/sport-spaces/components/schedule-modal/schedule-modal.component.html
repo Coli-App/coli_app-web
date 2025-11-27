@@ -1,0 +1,91 @@
+<div class="schedule-modal-dialog">
+  <div class="dialog-header">
+    <h2 class="text-xl font-semibold">
+      <mat-icon>schedule</mat-icon>
+      Definir Horario
+    </h2>
+    <p class="text-sm">
+      Selecciona los días y configura los horarios de disponibilidad del espacio
+    </p>
+  </div>
+
+  <form [formGroup]="scheduleForm" class="dialog-content">
+    <div class="selected-days-info">
+      <mat-icon>info</mat-icon>
+      <span>
+        {{ getSelectedDaysCount() === 0 
+          ? 'Selecciona al menos un día de la semana' 
+          : getSelectedDaysCount() + ' día(s) seleccionado(s)' }}
+      </span>
+    </div>
+
+    <div formArrayName="days" class="days-list">
+      @for (dayControl of daysArray.controls; track dayControl.get('day')?.value; let i = $index) {
+        <div [formGroupName]="i" class="day-item" 
+             [class.selected]="dayControl.get('selected')?.value">
+          
+          <!-- Checkbox del día -->
+          <div class="day-checkbox">
+            <mat-checkbox 
+              [checked]="dayControl.get('selected')?.value"
+              (change)="onToggleDay(i)"
+              color="primary">
+              <span class="day-name">{{ dayControl.get('dayName')?.value }}</span>
+            </mat-checkbox>
+          </div>
+
+          <!-- Campos de hora (solo visibles si el día está seleccionado) -->
+          @if (dayControl.get('selected')?.value) {
+            <div class="time-fields">
+              <mat-form-field appearance="fill" class="time-input">
+                <mat-label>Apertura</mat-label>
+                <input 
+                  matInput 
+                  type="time" 
+                  formControlName="time_start"
+                  placeholder="08:00">
+                <mat-icon matPrefix>login</mat-icon>
+              </mat-form-field>
+
+              <span class="time-separator">-</span>
+
+              <mat-form-field appearance="fill" class="time-input">
+                <mat-label>Cierre</mat-label>
+                <input 
+                  matInput 
+                  type="time" 
+                  formControlName="time_end"
+                  placeholder="20:00">
+                <mat-icon matPrefix>logout</mat-icon>
+              </mat-form-field>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    @if (!isFormValid() && getSelectedDaysCount() > 0) {
+      <div class="error-message">
+        <mat-icon>error</mat-icon>
+        <span>Verifica que todos los horarios seleccionados sean válidos (hora de cierre debe ser mayor que la de apertura)</span>
+      </div>
+    }
+  </form>
+
+  <div class="dialog-actions">
+    <button mat-button type="button" (click)="onCancel()">
+      Cancelar
+    </button>
+
+    <button 
+      mat-raised-button 
+      color="primary" 
+      type="button" 
+      (click)="onSave()"
+      [disabled]="!isFormValid()"
+      class="save-button">
+      <mat-icon>check</mat-icon>
+      Guardar Horario
+    </button>
+  </div>
+</div>

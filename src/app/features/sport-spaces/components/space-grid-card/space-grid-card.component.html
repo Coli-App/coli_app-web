@@ -17,6 +17,14 @@
           <mat-icon>visibility</mat-icon>
           <span>Ver detalles</span>
         </button>
+        <button mat-menu-item (click)="onEdit()">
+          <mat-icon>edit</mat-icon>
+          <span>Editar</span>
+        </button>
+        <button mat-menu-item (click)="onDelete()" class="delete-option">
+          <mat-icon>delete</mat-icon>
+          <span>Eliminar</span>
+        </button>
       </mat-menu>
     </div>
 

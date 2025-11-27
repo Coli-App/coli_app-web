@@ -179,6 +179,20 @@
   }
 }
 
+::ng-deep .mat-mdc-menu-panel {
+  .delete-option {
+    color: #dc2626;
+
+    mat-icon {
+      color: #dc2626;
+    }
+
+    &:hover {
+      background-color: #fef2f2;
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .space-card {
     .card-image-container {
