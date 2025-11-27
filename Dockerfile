@@ -3,14 +3,15 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
-COPY package.json ./
+COPY package.json package-lock.json ./
 
 RUN npm install
 COPY . .
 
-RUN npm ng build --configuration production
 
-# ---------- Stage 2: Servir estático con Nginx ----------
+RUN npx ng build --configuration production
+
+# ---------- Stage 2: Servir estáticos con Nginx ----------
 FROM nginx:1.27-alpine AS production
 
 RUN rm -rf /usr/share/nginx/html/*
