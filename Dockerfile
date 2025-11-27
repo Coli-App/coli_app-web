@@ -8,7 +8,7 @@ COPY package.json ./
 RUN npm install
 COPY . .
 
-RUN pnpm ng build --configuration production
+RUN npm ng build --configuration production
 
 # ---------- Stage 2: Servir estático con Nginx ----------
 FROM nginx:1.27-alpine AS production
