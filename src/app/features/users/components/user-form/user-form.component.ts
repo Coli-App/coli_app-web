@@ -94,8 +94,8 @@ export class UserFormComponent {
           hasChanges = true;
         }
 
-        if (formValue.rol && formValue.rol !== this.data.user?.role) {
-          updateData.rol = formValue.rol;
+        if (formValue.role && formValue.rol !== this.data.user?.role) {
+          updateData.role = formValue.rol;
           hasChanges = true;
         }
 
@@ -200,7 +200,7 @@ export class UserFormComponent {
       name: 'Nombre',
       email: 'Email',
       password: 'Contraseña',
-      rol: 'Rol',
+      role: 'Rol',
     };
     return labels[field] || field;
   }
