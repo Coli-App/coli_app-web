@@ -64,7 +64,7 @@ export class UserFormComponent {
       name: [data?.user?.name || '', [Validators.required, Validators.minLength(2)]],
       email: [data?.user?.email || '', [Validators.required, Validators.email]],
       password: ['', passwordValidators],
-      role: [data?.user?.role || '', [Validators.required]],
+      rol: [data?.user?.role || '', [Validators.required]],
     });
   }
 
@@ -94,8 +94,8 @@ export class UserFormComponent {
           hasChanges = true;
         }
 
-        if (formValue.role && formValue.role !== this.data.user?.role) {
-          updateData.rol = formValue.role;
+        if (formValue.rol && formValue.rol !== this.data.user?.role) {
+          updateData.rol = formValue.rol;
           hasChanges = true;
         }
 
@@ -200,7 +200,7 @@ export class UserFormComponent {
       name: 'Nombre',
       email: 'Email',
       password: 'Contraseña',
-      role: 'Rol',
+      rol: 'Rol',
     };
     return labels[field] || field;
   }
