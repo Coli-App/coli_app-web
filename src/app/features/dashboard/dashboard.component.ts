@@ -26,7 +26,8 @@ export class DashboardComponent implements OnInit {
 
     return {
       email: current?.email ?? 'Usuario',
-      role: roleLabel
+      role: roleLabel,
+      roleKey: roleKey
     };
   });
 
@@ -55,10 +56,15 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  actions = [
-    { title: 'Gestión de Usuarios', description: 'Administrar usuarios y roles del sistema', buttonText: 'Gestionar Usuarios', buttonIcon: 'group', route: '/usuarios' },
-    { title: 'Reservas', description: 'Consultar y gestionar reservas de espacios', buttonText: 'Ver Reservas', buttonIcon: 'calendar_today', route: '/reservas' },
-    { title: 'Espacio Deportivos', description: 'Administrar espacios deportivos', buttonText: 'Gestionar Espacios Deportivos', buttonIcon: 'sports_volleyball', route: '/espacios-deportivos' },
-    { title: 'Reportes', description: 'Estadísticas y análisis de uso', buttonText: 'Ver Reportes', buttonIcon: 'bar_chart', route: '/reportes' }
+  private allActions = [
+    { title: 'Gestión de Usuarios', description: 'Administrar usuarios y roles del sistema', buttonText: 'Gestionar Usuarios', buttonIcon: 'group', route: '/usuarios', roles: ['admin'] },
+    { title: 'Reservas', description: 'Consultar y gestionar reservas de espacios', buttonText: 'Ver Reservas', buttonIcon: 'calendar_today', route: '/reservas', roles: ['student', 'trainer'] },
+    { title: 'Espacio Deportivos', description: 'Administrar espacios deportivos', buttonText: 'Gestionar Espacios Deportivos', buttonIcon: 'sports_volleyball', route: '/espacios-deportivos', roles: ['admin'] },
+    { title: 'Reportes', description: 'Estadísticas y análisis de uso', buttonText: 'Ver Reportes', buttonIcon: 'bar_chart', route: '/reportes', roles: ['admin'] }
   ];
+
+  actions = computed(() => {
+    const userRole = this.user().roleKey;
+    return this.allActions.filter(action => action.roles.includes(userRole));
+  });
 }

@@ -1,13 +1,15 @@
 <div class="dialog-container">
   <div class="dialog-header">
     <mat-icon class="warning-icon">warning</mat-icon>
-    <h2>¿Eliminar usuario?</h2>
+    <h2>{{ data.title }}</h2>
   </div>
-  
+
   <div class="dialog-content">
-    <p>¿Estás seguro de que deseas eliminar a <strong>{{ data.userName }}</strong>?</p>
-    <p class="email-text">{{ data.userEmail }}</p>
-    <p class="warning-text">Esta acción no se puede deshacer.</p>
+    <p>¿Estás seguro de que deseas eliminar <strong>{{ data.itemName }}</strong>?</p>
+    @if (data.itemDescription) {
+    <p class="description-text">{{ data.itemDescription }}</p>
+    }
+    <p class="warning-text">{{ data.warningMessage || 'Esta acción no se puede deshacer.' }}</p>
   </div>
 
   <div class="dialog-actions">

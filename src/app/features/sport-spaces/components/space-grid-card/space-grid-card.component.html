@@ -1,8 +1,8 @@
 <mat-card class="space-card">
   <div class="card-image-container">
     <img [src]="space.imageUrl" [alt]="space.name" class="card-image">
-    <div class="status-badge" [class.active]="space.state === 'Activo'" [class.inactive]="space.state === 'Inactivo'">
-      {{ space.state }}
+    <div class="status-badge" [class.active]="space.state" [class.inactive]="!space.state">
+      {{ space.state ? 'Activo' : 'Inactivo' }}
     </div>
   </div>
 

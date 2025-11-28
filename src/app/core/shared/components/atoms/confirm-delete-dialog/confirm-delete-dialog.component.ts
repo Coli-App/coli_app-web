@@ -5,12 +5,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 export interface ConfirmDeleteData {
-  userName: string;
-  userEmail: string;
+  title: string;
+  itemName: string;
+  itemDescription?: string;
+  warningMessage?: string;
 }
 
 @Component({
   selector: 'app-confirm-delete-dialog',
+  standalone: true,
   imports: [
     CommonModule,
     MatDialogModule,

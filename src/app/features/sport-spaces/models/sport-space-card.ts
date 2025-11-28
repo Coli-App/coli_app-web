@@ -7,6 +7,6 @@ export interface SportSpaceCard {
   description: string;
   capacity: number;
   imageUrl: string;
-  state: string;
+  state: boolean;
   sports: AvailableSport[];
 }

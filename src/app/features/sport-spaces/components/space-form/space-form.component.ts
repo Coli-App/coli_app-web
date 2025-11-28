@@ -26,7 +26,7 @@ export interface SpaceFormData {
     ubication: string;
     description: string;
     capacity: number;
-    state: string;
+    state: boolean;
     sports: any[];
     imageUrl?: string;
   };
@@ -72,7 +72,7 @@ export class SpaceFormComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.loadSports();
-    
+
     if (this.data.mode === 'edit' && this.data.space) {
       this.loadSpaceData();
     }
@@ -91,17 +91,17 @@ export class SpaceFormComponent implements OnInit {
 
   private loadSpaceData(): void {
     const space = this.data.space!;
-    
+
     this.spaceForm.patchValue({
       name: space.name,
       location: space.ubication,
       description: space.description,
       capacity: space.capacity,
-      state: space.state === 'Activo',
+      state: space.state,
       sportIds: space.sports.map((s: any) => s.id),
     });
 
-    // En modo edición, la imagen no es requerida
+
     this.spaceForm.get('image')?.clearValidators();
     this.spaceForm.get('image')?.updateValueAndValidity();
   }
@@ -123,9 +123,8 @@ export class SpaceFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    // En modo edición, el archivo y el schedule son opcionales
     const isEdit = this.data.mode === 'edit';
-    
+
     if (this.spaceForm.invalid) {
       this.spaceForm.markAllAsTouched();
       return;
@@ -145,7 +144,6 @@ export class SpaceFormComponent implements OnInit {
     const formValue = this.spaceForm.value;
 
     if (isEdit) {
-      // Modo edición
       const updateDto: any = {
         name: formValue.name,
         ubication: formValue.location,
@@ -155,7 +153,7 @@ export class SpaceFormComponent implements OnInit {
         sports: formValue.sportIds.map((id: string) => Number(id)),
       };
 
-      this.spacesService.updateSpace(this.data.space!.id, updateDto).subscribe({
+      this.spacesService.updateSpace(this.data.space!.id, updateDto, this.selectedFile || undefined).subscribe({
         next: (resp) => {
           this.loading.set(false);
           this.dialogRef.close({ success: true, data: resp });
@@ -166,7 +164,6 @@ export class SpaceFormComponent implements OnInit {
         },
       });
     } else {
-      // Modo creación
       const dto: CreateSportSpace = {
         name: formValue.name,
         ubication: formValue.location,
@@ -223,7 +220,6 @@ export class SpaceFormComponent implements OnInit {
     this.spaceForm.get('image')?.markAsTouched();
   }
 
-  // Schedule Methods
   openScheduleModal(): void {
     const dialogRef = this.dialog.open(ScheduleModalComponent, {
       width: '700px',
@@ -235,7 +231,6 @@ export class SpaceFormComponent implements OnInit {
       if (result && result.length > 0) {
         this.schedule = result;
         this.scheduleConfigured.set(true);
-        console.log('📅 Horario configurado:', this.schedule);
       }
     });
   }

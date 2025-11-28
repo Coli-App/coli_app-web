@@ -18,6 +18,7 @@ import { SportSpaceStats } from '@features/sport-spaces/models/sport-space.stats
 import type { SportSpaceCard } from '@app/features/sport-spaces/models/sport-space-card';
 import { SportSpacesService } from '@app/features/sport-spaces/services/sport-spaces.service';
 import { SportSpacesResponse } from '@app/features/sport-spaces/models/sport-spaces.response';
+import { ConfirmDeleteDialogComponent, ConfirmDeleteData } from '@core/shared/components/atoms/confirm-delete-dialog/confirm-delete-dialog.component';
 
 @Component({
   selector: 'app-sport-spaces',
@@ -153,24 +154,36 @@ export class SportSpacesComponent {
   }
 
   onDeleteSpace(space: SportSpaceCard): void {
-    if (confirm(`¿Estás seguro de que deseas eliminar el espacio "${space.name}"?`)) {
-      this.spacesService.deleteSpace(space.id).subscribe({
-        next: () => {
-          this.snackBar.open('Espacio eliminado exitosamente', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['success-snackbar'],
-          });
-          this.loadSportSpaces();
-        },
-        error: (err) => {
-          console.error('Error al eliminar el espacio:', err);
-          this.snackBar.open('Error al eliminar el espacio', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['error-snackbar'],
-          });
-        },
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      width: '400px',
+      data: {
+        title: '¿Eliminar espacio deportivo?',
+        itemName: space.name,
+        itemDescription: space.ubication,
+        warningMessage: 'Esta acción no se puede deshacer. Se eliminarán todos los horarios asociados.'
+      } as ConfirmDeleteData,
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.spacesService.deleteSpace(space.id).subscribe({
+          next: () => {
+            this.snackBar.open('Espacio eliminado exitosamente', 'Cerrar', {
+              duration: 3000,
+              panelClass: ['success-snackbar'],
+            });
+            this.loadSportSpaces();
+          },
+          error: (err) => {
+            console.error('Error al eliminar el espacio:', err);
+            this.snackBar.open('Error al eliminar el espacio', 'Cerrar', {
+              duration: 3000,
+              panelClass: ['error-snackbar'],
+            });
+          },
+        });
+      }
+    });
   }
 
   loadSportSpaces(): void {
@@ -188,7 +201,7 @@ export class SportSpacesComponent {
                 ubication: s.ubication,
                 capacity: s.capacity,
                 imageUrl: s.imageUrl,
-                state: s.state,
+                state: s.state === 'Activo',
                 sports: s.sports,
               } as SportSpaceCard)
           )

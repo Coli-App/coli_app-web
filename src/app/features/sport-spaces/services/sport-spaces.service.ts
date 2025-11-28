@@ -55,8 +55,9 @@ export class SportSpacesService {
     return this.http.get<SpaceResponse>(`${this.getUrl()}/${id}`);
   }
 
-  updateSpace(id: number, space: UpdateSportSpace): Observable<any> {
-    // Enviar JSON directo (sin soporte para imagen)
+  updateSpace(id: number, space: UpdateSportSpace, image?: File): Observable<any> {
+    const formData = new FormData();
+
     const spaceData: any = {};
     if (space.name !== undefined) spaceData.name = space.name;
     if (space.state !== undefined) spaceData.state = space.state;
@@ -66,8 +67,16 @@ export class SportSpacesService {
     if (space.sports !== undefined) spaceData.sports = space.sports;
 
     console.log('📦 Actualización de espacio - Datos JSON:', spaceData);
+    if (image) {
+      console.log('📎 Nueva imagen:', image.name);
+    }
 
-    return this.http.put(`${this.getUrl()}/edit-space/${id}`, spaceData);
+    formData.append('data', JSON.stringify(spaceData));
+    if (image) {
+      formData.append('image', image);
+    }
+
+    return this.http.put(`${this.getUrl()}/edit-space/${id}`, formData);
   }
 
   deleteSpace(id: number): Observable<any> {

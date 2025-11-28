@@ -11,7 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { UserService } from '@features/users/services/user.service';
 
-import { ConfirmDeleteDialogComponent, ConfirmDeleteData } from '../confirm-delete-dialog/confirm-delete-dialog.component';
+import { ConfirmDeleteDialogComponent, ConfirmDeleteData } from '@core/shared/components/atoms/confirm-delete-dialog/confirm-delete-dialog.component';
 import { UserFormComponent, UserFormData } from '../user-form/user-form.component';
 import { UserViewComponent, UserViewData } from '../user-view/user-view.component';
 
@@ -159,8 +159,9 @@ export class UserTableComponent {
     const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
       width: '400px',
       data: {
-        userName: user.nombre,
-        userEmail: user.correo
+        title: '¿Eliminar usuario?',
+        itemName: user.nombre,
+        itemDescription: user.correo,
       } as ConfirmDeleteData
     });
 

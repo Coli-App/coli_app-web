@@ -59,13 +59,12 @@ export class SpaceDetailsModalComponent implements OnInit {
 
   formatTime(time: string | null): string {
     if (!time) return '';
-    // Convertir de "10:00:00" a "10:00"
     return time.substring(0, 5);
   }
 
   getSortedSchedule() {
     if (!this.space?.schedule) return [];
-    
+
     return [...this.space.schedule].sort((a, b) => {
       const indexA = DAYS_ORDER.indexOf(a.day);
       const indexB = DAYS_ORDER.indexOf(b.day);

@@ -19,7 +19,7 @@
 
   <!-- Actions -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    @for (card of actions; track card.title) {
+    @for (card of actions(); track card.title) {
     <app-action-card [title]="card.title" [description]="card.description" [buttonText]="card.buttonText"
       [buttonIcon]="card.buttonIcon" [route]="card.route" />
     }
