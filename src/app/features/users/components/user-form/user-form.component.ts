@@ -95,7 +95,7 @@ export class UserFormComponent {
         }
 
         if (formValue.role && formValue.role !== this.data.user?.role) {
-          updateData.role = formValue.role;
+          updateData.rol = formValue.role;
           hasChanges = true;
         }
 
