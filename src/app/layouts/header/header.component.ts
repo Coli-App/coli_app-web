@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, type OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, type OnInit, OnDestroy } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterModule } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -10,6 +10,7 @@ import { UserState } from '@app/state/UserState';
 import { AuthService } from '@app/core/services/auth/auth.service';
 import { TokenService } from '@app/core/services/auth/token.service';
 import { ROLE_LABELS } from '@app/core/consts/user.roles.consts';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -26,7 +27,9 @@ import { ROLE_LABELS } from '@app/core/consts/user.roles.consts';
   styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnDestroy {
+  private destroy$ = new Subject<void>();
+
   constructor(
     private userState: UserState,
     private authService: AuthService,
@@ -47,13 +50,20 @@ export class HeaderComponent {
   });
 
   logout() {
-    this.authService.logout().subscribe({
-      next: () => {
-        console.log('Sesión cerrada');
-        this.tokenService.clearTokens();
-        this.router.navigate(['/']);
-      },
-      error: (err) => console.error('Error al cerrar sesión', err),
-    });
+    this.authService.logout()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          console.log('Sesión cerrada');
+          this.tokenService.clearTokens();
+          this.router.navigate(['/']);
+        },
+        error: (err) => console.error('Error al cerrar sesión', err),
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

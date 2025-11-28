@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, Inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subject, takeUntil } from 'rxjs';
 
 import { UserService } from '@features/users/services/user.service';
 import { CreateUser } from '@features/users/models/create.user';
@@ -40,11 +41,12 @@ export interface UserFormData {
   styleUrl: './user-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UserFormComponent {
+export class UserFormComponent implements OnDestroy {
   isLoading = signal(false);
   userForm: FormGroup;
   isEditMode: boolean;
   userId?: string;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -106,7 +108,9 @@ export class UserFormComponent {
 
         if (hasChanges) {
           console.log('Datos a actualizar:', updateData);
-          this.userService.updateUser(this.userId, updateData).subscribe({
+          this.userService.updateUser(this.userId, updateData)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
             next: (response) => {
               this.isLoading.set(false);
               this.snackBar.open('Usuario actualizado exitosamente', 'Cerrar', {
@@ -135,7 +139,9 @@ export class UserFormComponent {
       } else {
         const userData: CreateUser = this.userForm.value;
 
-        this.userService.createUser(userData).subscribe({
+        this.userService.createUser(userData)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
           next: (response) => {
             this.isLoading.set(false);
             this.snackBar.open('Usuario creado exitosamente', 'Cerrar', {
@@ -203,5 +209,10 @@ export class UserFormComponent {
       rol: 'Rol',
     };
     return labels[field] || field;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

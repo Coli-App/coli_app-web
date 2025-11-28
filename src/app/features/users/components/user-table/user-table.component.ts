@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, computed, signal, inject, Output, EventEmitter, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, computed, signal, inject, Output, EventEmitter, input, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
@@ -8,6 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { Subject, takeUntil } from 'rxjs';
 
 import { UserService } from '@features/users/services/user.service';
 import { UserState } from '@app/state/UserState';
@@ -40,9 +41,10 @@ interface User {
   styleUrl: './user-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UserTableComponent {
+export class UserTableComponent implements OnDestroy {
   searchTerm = input<string>('');
   @Output() userUpdated = new EventEmitter<User[]>();
+  private destroy$ = new Subject<void>();
 
   private userService = inject(UserService);
   private userState = inject(UserState);
@@ -68,27 +70,29 @@ export class UserTableComponent {
   );
 
   loadUsers() {
-    this.userService.getAllUsers().subscribe({
-      next: (users) => {
-        const mappedUsers = users.map(user => ({
-          id: user.id,
-          nombre: user.name,
-          correo: user.email,
-          rol: this.mapRoleToLocal(user.rol),
-          fechaRegistro: new Date().toLocaleDateString('es-ES'),
-          iniciales: this.getInitials(user.name)
-        }));
-        this.users.set(mappedUsers);
-        this.userUpdated.emit(mappedUsers);
-      },
-      error: (error) => {
-        console.error('Error loading users:', error);
-        this.snackBar.open('Error al cargar usuarios', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    });
+    this.userService.getAllUsers()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (users) => {
+          const mappedUsers = users.map(user => ({
+            id: user.id,
+            nombre: user.name,
+            correo: user.email,
+            rol: this.mapRoleToLocal(user.rol),
+            fechaRegistro: new Date().toLocaleDateString('es-ES'),
+            iniciales: this.getInitials(user.name)
+          }));
+          this.users.set(mappedUsers);
+          this.userUpdated.emit(mappedUsers);
+        },
+        error: (error) => {
+          console.error('Error loading users:', error);
+          this.snackBar.open('Error al cargar usuarios', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
   }
 
   private mapRoleToLocal(role: string): 'Administrador' | 'Entrenador' | 'Estudiante' | 'Personal de Bienestar' {
@@ -147,14 +151,16 @@ export class UserTableComponent {
       } as UserFormData
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result && result.updated) {
-        console.log('Usuario actualizado exitosamente, recargando tabla...');
-        this.loadUsers();
-      } else {
-        console.log('No se realizaron cambios o se canceló la operación');
-      }
-    });
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result && result.updated) {
+          console.log('Usuario actualizado exitosamente, recargando tabla...');
+          this.loadUsers();
+        } else {
+          console.log('No se realizaron cambios o se canceló la operación');
+        }
+      });
   }
 
   deleteUser(user: User) {
@@ -175,26 +181,30 @@ export class UserTableComponent {
       } as ConfirmDeleteData
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true && user.id) {
-        this.userService.deleteUser(user.id).subscribe({
-          next: () => {
-            this.snackBar.open(`Usuario ${user.nombre} eliminado exitosamente`, 'Cerrar', {
-              duration: 3000,
-              panelClass: ['success-snackbar']
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result === true && user.id) {
+          this.userService.deleteUser(user.id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: () => {
+                this.snackBar.open(`Usuario ${user.nombre} eliminado exitosamente`, 'Cerrar', {
+                  duration: 3000,
+                  panelClass: ['success-snackbar']
+                });
+                this.loadUsers();
+              },
+              error: (error) => {
+                console.error('Error deleting user:', error);
+                this.snackBar.open('Error al eliminar el usuario', 'Cerrar', {
+                  duration: 3000,
+                  panelClass: ['error-snackbar']
+                });
+              }
             });
-            this.loadUsers();
-          },
-          error: (error) => {
-            console.error('Error deleting user:', error);
-            this.snackBar.open('Error al eliminar el usuario', 'Cerrar', {
-              duration: 3000,
-              panelClass: ['error-snackbar']
-            });
-          }
-        });
-      }
-    });
+        }
+      });
   }
 
   viewUser(user: User) {
@@ -228,5 +238,10 @@ export class UserTableComponent {
 
   isCurrentUser(user: User): boolean {
     return user.id === this.userState.userId();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, signal, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal, inject, OnInit, OnDestroy } from '@angular/core';
 import { ActionCardComponent } from '@features/dashboard/components/action-card/action-card.component';
 import { StatCardComponent } from '@features/dashboard/components/stat-card/stat-card.component';
 import { UserState } from '@app/state/UserState';
@@ -7,6 +7,7 @@ import { UserService } from '@features/users/services/user.service';
 import { ROLE_LABELS } from '@app/core/consts/user.roles.consts';
 import { SportSpacesService } from '@app/features/sport-spaces/services/sport-spaces.service';
 import { BookingsService } from '@app/features/bookings/services/bookings.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,10 +16,11 @@ import { BookingsService } from '@app/features/bookings/services/bookings.servic
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   private userService = inject(UserService);
   private sportSpacesService = inject(SportSpacesService);
   private bookingsService = inject(BookingsService);
+  private destroy$ = new Subject<void>();
 
   constructor(private userState: UserState) {}
 
@@ -61,50 +63,63 @@ export class DashboardComponent implements OnInit {
     this.loadBookingsCount();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   private loadUserCount(): void {
-    this.userService.getAllUsers().subscribe({
-      next: (users) => {
-        this.totalUsers.set(users.length);
-      },
-      error: (error) => {
-        console.error('Error al cargar la cantidad de usuarios:', error);
-        this.totalUsers.set(0);
-      }
-    });
+    this.userService.getAllUsers()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (users) => {
+          this.totalUsers.set(users.length);
+        },
+        error: (error) => {
+          console.error('Error al cargar la cantidad de usuarios:', error);
+          this.totalUsers.set(0);
+        }
+      });
   }
 
   private loadBookingsPeerUserCount(): void {
-    this.bookingsService.getBookingsByCreator(this.userState.userId()!).subscribe({
-      next: (bookings) => {
-        this.currentUserBookings.set(bookings.length);
-      },
-      error: (error) => {
-        console.error('Error al cargar la cantidad de reservas:', error);
-      }
-    });
+    this.bookingsService.getBookingsByCreator(this.userState.userId()!)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (bookings) => {
+          this.currentUserBookings.set(bookings.length);
+        },
+        error: (error) => {
+          console.error('Error al cargar la cantidad de reservas:', error);
+        }
+      });
   }
 
   private loadBookingsCount(): void {
-    this.bookingsService.getAllBookings().subscribe({
-      next: (bookings) => {
-        this.allBookings.set(bookings.length);
-      },
-      error: (error) => {
-        console.error('Error al cargar la cantidad de reservas:', error);
-      }
-    });
+    this.bookingsService.getAllBookings()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (bookings) => {
+          this.allBookings.set(bookings.length);
+        },
+        error: (error) => {
+          console.error('Error al cargar la cantidad de reservas:', error);
+        }
+      });
   }
 
   private loadSportSpaceCount(): void {
-    this.sportSpacesService.getAllSpaces().subscribe({
-      next: (spaces) => {
-        this.totalSportSpaces.set(spaces.length);
-      },
-      error: (error) => {
-        console.error('Error al cargar la cantidad de instalaciones:', error);
-        this.totalSportSpaces.set(0);
-      }
-    });
+    this.sportSpacesService.getAllSpaces()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (spaces) => {
+          this.totalSportSpaces.set(spaces.length);
+        },
+        error: (error) => {
+          console.error('Error al cargar la cantidad de instalaciones:', error);
+          this.totalSportSpaces.set(0);
+        }
+      });
   }
 
   private allActions = [

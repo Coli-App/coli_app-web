@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -11,6 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subject, takeUntil } from 'rxjs';
 
 import { BookingsService } from '@features/bookings/services/bookings.service';
 import { CreateBooking } from '@features/bookings/models/create-booking';
@@ -37,8 +38,9 @@ import { UpdateSportSpace } from '@features/sport-spaces/models/update-sport-spa
   styleUrl: './booking-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BookingFormComponent implements OnInit {
+export class BookingFormComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
+  private destroy$ = new Subject<void>();
   private bookingsService = inject(BookingsService);
   private userState = inject(UserState);
   private spacesService = inject(SportSpacesService);
@@ -80,7 +82,9 @@ export class BookingFormComponent implements OnInit {
   }
 
   loadSpaces(): void {
-    this.spacesService.getAllSpaces().subscribe({
+    this.spacesService.getAllSpaces()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (spaces) => {
         const activeSpaces = spaces.filter(s => s.state === 'Activo' && s.capacity > 0);
         this.availableSpaces.set(activeSpaces);
@@ -135,20 +139,24 @@ export class BookingFormComponent implements OnInit {
         people_number: Number(formValue.people_number),
       };
 
-      this.bookingsService.createBooking(booking).subscribe({
-        next: () => {
-          const selectedSpace = this.availableSpaces().find(s => s.id === Number(formValue.espacio_id));
-          if (selectedSpace) {
-            const newCapacity = selectedSpace.capacity - Number(formValue.people_number);
-            const updateSpace: UpdateSportSpace = {
-              capacity: newCapacity
-            };
+      this.bookingsService.createBooking(booking)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            const selectedSpace = this.availableSpaces().find(s => s.id === Number(formValue.espacio_id));
+            if (selectedSpace) {
+              const newCapacity = selectedSpace.capacity - Number(formValue.people_number);
+              const updateSpace: UpdateSportSpace = {
+                capacity: newCapacity
+              };
 
-            this.spacesService.updateSpace(selectedSpace.id, updateSpace).subscribe({
-              next: () => console.log('Capacidad actualizada correctamente'),
-              error: (err) => console.error('Error al actualizar capacidad', err)
-            });
-          }
+              this.spacesService.updateSpace(selectedSpace.id, updateSpace)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                  next: () => console.log('Capacidad actualizada correctamente'),
+                  error: (err) => console.error('Error al actualizar capacidad', err)
+                });
+            }
 
           this.isLoading.set(false);
           this.snackBar.open('Reserva creada exitosamente', 'Cerrar', {
@@ -202,5 +210,10 @@ export class BookingFormComponent implements OnInit {
 
   get minDate(): Date {
     return new Date();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
