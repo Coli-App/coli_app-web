@@ -57,7 +57,7 @@ export class UserListComponent {
       {
         title: 'Estudiantes',
         value: totalEstudiantes,
-        subtitle: totalUsers > 0 ? `${Math.round((totalEstudiantes / totalUsers) * 100)}% del total` : '0% del total',
+        subtitle: totalUsers > 0 ? `${Math.round((totalEstudiantes / totalUsers) * 100)}% del total de usuarios` : '0% del total usuarios',
         icon: 'school'
       },
       {

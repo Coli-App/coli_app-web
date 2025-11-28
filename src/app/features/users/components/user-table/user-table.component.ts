@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
 import { UserService } from '@features/users/services/user.service';
+import { UserState } from '@app/state/UserState';
 
 import { ConfirmDeleteDialogComponent, ConfirmDeleteData } from '@core/shared/components/atoms/confirm-delete-dialog/confirm-delete-dialog.component';
 import { UserFormComponent, UserFormData } from '../user-form/user-form.component';
@@ -44,6 +45,7 @@ export class UserTableComponent {
   @Output() userUpdated = new EventEmitter<User[]>();
 
   private userService = inject(UserService);
+  private userState = inject(UserState);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
@@ -156,6 +158,14 @@ export class UserTableComponent {
   }
 
   deleteUser(user: User) {
+    if (this.isCurrentUser(user)) {
+      this.snackBar.open('No puedes eliminar tu propio usuario', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
     const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
       width: '400px',
       data: {
@@ -214,5 +224,9 @@ export class UserTableComponent {
 
   getUsersData() {
     return this.users();
+  }
+
+  isCurrentUser(user: User): boolean {
+    return user.id === this.userState.userId();
   }
 }

@@ -32,11 +32,13 @@ export class AuthService {
           const decodedToken = this.tokenService.decodeToken();
           if (decodedToken) {
             const userData = {
+              id: decodedToken.app_metadata?.user_id || '',
               name: decodedToken.email?.split('@')[0] || '',
               email: decodedToken.email || '',
               role: decodedToken.app_metadata?.user_role || 'user'
             };
             localStorage.setItem('user_data', JSON.stringify(userData));
+            console.log('User data with correct ID:', userData);
           }
 
           setTimeout(() => {

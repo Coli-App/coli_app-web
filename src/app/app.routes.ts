@@ -7,6 +7,8 @@ import { authGuard } from '@core/guards/auth.guard';
 import { roleGuard } from '@core/guards/role.guard';
 import { UserListComponent } from '@app/features/users/pages/user-management/user-management.component';
 import { SportSpacesComponent } from '@app/features/sport-spaces/pages/sport-spaces-management/sport-spaces-management.component';
+import { BookingsManagementComponent } from '@app/features/bookings/pages/bookings-management/bookings-management.component';
+import { ReportsDashboardComponent } from '@app/features/reports/pages/reports-dashboard.component';
 
 export const routes: Routes = [
   {
@@ -32,13 +34,13 @@ export const routes: Routes = [
   },
   {
     path: 'reservas',
-    canActivate: [authGuard, roleGuard(['student', 'trainer', 'admin'])],
-    loadComponent: () => import('@features/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    canActivate: [authGuard, roleGuard(['student', 'trainer'])],
+    component: BookingsManagementComponent
   },
   {
     path: 'reportes',
     canActivate: [authGuard, roleGuard(['admin'])],
-    loadComponent: () => import('@features/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    component: ReportsDashboardComponent
   },
   {
     path: '**',

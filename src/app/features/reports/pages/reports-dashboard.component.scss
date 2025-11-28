@@ -1,0 +1,104 @@
+:host {
+  display: block;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.chart-container {
+  position: relative;
+  height: 320px;
+  width: 100%;
+}
+
+mat-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  border: none;
+}
+
+mat-card-header {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+mat-card-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+mat-card-subtitle {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.space-ranking {
+  .ranking-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .rank-number {
+    width: 2rem;
+    height: 2rem;
+    background-color: #10b981;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.875rem;
+    margin-right: 0.75rem;
+  }
+
+  .space-info {
+    flex: 1;
+    font-weight: 500;
+    color: #111827;
+  }
+
+  .booking-count {
+    color: #10b981;
+    font-weight: 600;
+  }
+}
+
+.metrics-grid {
+  .metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .metric-label {
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .metric-value {
+      font-weight: 600;
+    }
+  }
+}

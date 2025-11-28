@@ -1,0 +1,101 @@
+<div class="booking-form-dialog">
+  <div class="dialog-header">
+    <h2 class="text-xl font-semibold text-gray-900 mb-1">Nueva Reserva</h2>
+    <p class="text-sm text-gray-600">Completa la información para reservar un espacio deportivo</p>
+  </div>
+
+  <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="dialog-content">
+    <!-- Espacio Deportivo -->
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Espacio Deportivo</mat-label>
+      <mat-icon matPrefix>sports_volleyball</mat-icon>
+      <mat-select formControlName="espacio_id" placeholder="Selecciona un espacio">
+        @if (availableSpaces().length === 0) {
+          <mat-option disabled>
+            No hay espacios habilitados. Contacta al administrador.
+          </mat-option>
+        } @else {
+          @for (space of availableSpaces(); track space.id) {
+            <mat-option [value]="space.id">
+              {{ space.name }} - Capacidad: {{ space.capacity }} personas
+            </mat-option>
+          }
+        }
+      </mat-select>
+      @if (bookingForm.get('espacio_id')?.invalid && bookingForm.get('espacio_id')?.touched) {
+        <mat-error>{{ getErrorMessage('espacio_id') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Fecha -->
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Fecha de la reserva</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="date" [min]="minDate">
+      <mat-icon matPrefix>calendar_today</mat-icon>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      @if (bookingForm.get('date')?.invalid && bookingForm.get('date')?.touched) {
+        <mat-error>{{ getErrorMessage('date') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Horarios -->
+    <div class="grid grid-cols-2 gap-4">
+      <mat-form-field appearance="fill">
+        <mat-label>Hora de inicio</mat-label>
+        <input matInput type="time" formControlName="time_start">
+        <mat-icon matPrefix>schedule</mat-icon>
+        @if (bookingForm.get('time_start')?.invalid && bookingForm.get('time_start')?.touched) {
+          <mat-error>{{ getErrorMessage('time_start') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Hora de fin</mat-label>
+        <input matInput type="time" formControlName="time_end">
+        <mat-icon matPrefix>schedule</mat-icon>
+        @if (bookingForm.get('time_end')?.invalid && bookingForm.get('time_end')?.touched) {
+          <mat-error>{{ getErrorMessage('time_end') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Número de personas -->
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Número de personas</mat-label>
+      <input matInput type="number" formControlName="people_number" [min]="1" [max]="selectedSpaceCapacity()">
+      <mat-icon matPrefix>group</mat-icon>
+      @if (selectedSpaceCapacity() > 0) {
+        <mat-hint>Capacidad máxima: {{ selectedSpaceCapacity() }} personas</mat-hint>
+      }
+      @if (bookingForm.get('people_number')?.invalid && bookingForm.get('people_number')?.touched) {
+        <mat-error>{{ getErrorMessage('people_number') }}</mat-error>
+      }
+    </mat-form-field>
+  </form>
+
+  <div class="dialog-actions">
+    <button
+      mat-button
+      type="button"
+      (click)="onCancel()"
+      [disabled]="isLoading()">
+      Cancelar
+    </button>
+
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      (click)="onSubmit()"
+      [disabled]="isLoading() || bookingForm.invalid"
+      class="bg-[#10b981] hover:bg-[#059669]">
+      @if (isLoading()) {
+        <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+      } @else {
+        <mat-icon>event_available</mat-icon>
+      }
+      {{ isLoading() ? 'Creando...' : 'Crear Reserva' }}
+    </button>
+  </div>
+</div>

@@ -37,7 +37,11 @@
     <div class="space-info">
       <div class="info-item">
         <mat-icon>group</mat-icon>
-        <span>Capacidad: {{ space.capacity }} personas</span>
+        @if (space.capacity === 0) {
+          <span class="text-gray-600">Aforo total ocupado actualmente</span>
+        } @else {
+          <span>Capacidad: {{ space.capacity }} personas</span>
+        }
       </div>
     </div>
 

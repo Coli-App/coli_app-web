@@ -2,6 +2,7 @@ import { Injectable, signal, inject, computed, effect } from '@angular/core';
 import { TokenService } from '@app/core/services/auth/token.service';
 
 export interface User {
+  id: string;
   name: string;
   email: string;
   role: string;
@@ -18,6 +19,7 @@ export class UserState {
 
   public readonly isAuthenticated = computed(() => !!this.currentUser());
   public readonly userRole = computed(() => this.currentUser()?.role ?? null);
+  public readonly userId = computed(() => this.currentUser()?.id ?? null);
   public readonly userEmail = computed(() => this.currentUser()?.email ?? null);
 
   constructor() {
@@ -69,12 +71,13 @@ export class UserState {
 
       if (decodedToken?.email) {
         const user: User = {
+          id: decodedToken.app_metadata?.user_id || '',
           name: decodedToken.name || decodedToken.email?.split('@')[0] || 'Usuario',
           email: decodedToken.email,
           role: decodedToken.app_metadata?.user_role || 'user',
         };
         this.setUser(user);
-        console.log('User loaded from token (fallback)');
+        console.log('User loaded from token with correct ID:', user);
       } else {
         console.log('No valid user data in token');
         this.clearUser();

@@ -1,0 +1,126 @@
+<div class="p-6">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Mis Reservas</h1>
+    <p class="text-gray-600">Consulta y gestiona tus reservas de espacios deportivos</p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    @for (stat of stats(); track stat.title) {
+      <app-stat-card
+        [title]="stat.title"
+        [value]="stat.value"
+        [subtitle]="stat.subtitle"
+        [icon]="stat.icon">
+      </app-stat-card>
+    }
+  </div>
+
+  <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+    <mat-form-field appearance="fill" class="w-full sm:w-96">
+      <mat-label>Buscar reserva...</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput type="text" [ngModel]="searchValue()" (ngModelChange)="searchValue.set($event)">
+      @if (searchValue()) {
+      <button matSuffix mat-icon-button aria-label="Clear" (click)="searchValue.set('')">
+        <mat-icon>close</mat-icon>
+      </button>
+      }
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="openCreateDialog()" class="bg-[#10b981] hover:bg-[#059669]">
+      <mat-icon>add</mat-icon>
+      Nueva Reserva
+    </button>
+  </div>
+
+  <div class="mat-elevation-z2 rounded-lg overflow-hidden bg-white">
+    <table mat-table [dataSource]="filteredBookings()" class="w-full">
+      <ng-container matColumnDef="espacio">
+        <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-700">Espacio Deportivo</th>
+        <td mat-cell *matCellDef="let booking">
+          <div class="flex items-center gap-2">
+            <mat-icon class="text-green-600">sports_volleyball</mat-icon>
+            <span class="font-medium">{{ booking.spaceName || 'Cargando...' }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fecha">
+        <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-700">Fecha</th>
+        <td mat-cell *matCellDef="let booking">
+          <div class="flex items-center gap-2">
+            <mat-icon class="text-gray-600 text-base">calendar_today</mat-icon>
+            <span>{{ formatDate(booking.date) }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="hora">
+        <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-700">Horario</th>
+        <td mat-cell *matCellDef="let booking">
+          <div class="flex items-center gap-2">
+            <mat-icon class="text-gray-600 text-base">schedule</mat-icon>
+            <span>{{ booking.time_start }} - {{ booking.time_end }}</span>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="personas">
+        <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-700">Personas</th>
+        <td mat-cell *matCellDef="let booking">
+          <div class="flex items-center gap-2">
+            <mat-icon class="text-gray-600 text-base">group</mat-icon>
+            <span>{{ booking.people_number }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-700">Estado</th>
+        <td mat-cell *matCellDef="let booking">
+          @if (booking.isPast) {
+            <mat-chip class="!bg-gray-100 !text-gray-700">
+              <mat-icon class="text-base">check_circle</mat-icon>
+              Completada
+            </mat-chip>
+          } @else {
+            <mat-chip class="!bg-green-100 !text-green-700">
+              <mat-icon class="text-base">event_available</mat-icon>
+              Próxima
+            </mat-chip>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-700">Acciones</th>
+        <td mat-cell *matCellDef="let booking">
+          @if (!booking.isPast) {
+            <button mat-stroked-button
+                    color="warn"
+                    (click)="cancelBooking(booking)"
+                    class="!text-red-600 !border-red-600 hover:!bg-red-50 !text-sm !py-1 !px-3 !min-w-0">
+              <mat-icon class="!text-base !mr-1">cancel</mat-icon>
+              Cancelar
+            </button>
+          } @else {
+            <span class="text-gray-400 text-sm">-</span>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50"></tr>
+
+      <!-- No data row -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center text-gray-500 py-8" [attr.colspan]="displayedColumns.length">
+          <div class="flex flex-col items-center gap-3">
+            <mat-icon class="text-6xl h-16 w-16 text-gray-400">event_busy</mat-icon>
+            <p class="text-base">No se encontraron reservas</p>
+            <p class="text-sm text-gray-400">Crea tu primera reserva para comenzar</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

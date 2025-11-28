@@ -1,0 +1,189 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Panel de Reportes</h1>
+    <p class="text-gray-600">Análisis y métricas del sistema deportivo</p>
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex justify-center items-center h-64">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+  } @else if (metrics()) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
+      @for (stat of statsCards; track stat.title) {
+        <app-stat-card
+          [title]="stat.title"
+          [value]="stat.value"
+          [subtitle]="stat.subtitle"
+          [icon]="stat.icon">
+        </app-stat-card>
+      }
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Gráfico de reservas por fecha -->
+      <mat-card class="p-6">
+        <mat-card-header class="pb-4">
+          <mat-card-title class="text-lg font-semibold text-gray-900">
+            <mat-icon class="mr-2 text-green-600">timeline</mat-icon>
+            Reservas por Fecha (Últimos 30 días)
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="h-80">
+            <canvas
+              baseChart
+              [data]="bookingsByDateChart.data"
+              [options]="bookingsByDateChart.options"
+              [type]="bookingsByDateChart.type">
+            </canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Gráfico de reservas por espacio -->
+      <mat-card class="p-6">
+        <mat-card-header class="pb-4">
+          <mat-card-title class="text-lg font-semibold text-gray-900">
+            <mat-icon class="mr-2 text-blue-600">pie_chart</mat-icon>
+            Reservas por Espacio Deportivo
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="h-80">
+            <canvas
+              baseChart
+              [data]="bookingsBySpaceChart.data"
+              [options]="bookingsBySpaceChart.options"
+              [type]="bookingsBySpaceChart.type">
+            </canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Gráfico de usuarios por rol -->
+    <mat-card class="p-6 mb-8">
+      <mat-card-header class="pb-4">
+        <mat-card-title class="text-lg font-semibold text-gray-900">
+          <mat-icon class="mr-2 text-purple-600">group</mat-icon>
+          Usuarios por Rol
+        </mat-card-title>
+        <mat-card-subtitle class="text-sm text-gray-600 mt-1">
+          Distribución de usuarios según sus roles en el sistema
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="h-80">
+          <canvas
+            baseChart
+            [data]="usersByRoleChart.data"
+            [options]="usersByRoleChart.options"
+            [type]="usersByRoleChart.type">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <mat-card class="p-6">
+        <mat-card-header class="pb-4">
+          <mat-card-title class="text-lg font-semibold text-gray-900">
+            <mat-icon class="mr-2 text-amber-600">star</mat-icon>
+            Espacios Más Reservados
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="space-y-3">
+            @for (space of metrics()!.bookingsBySpace.slice(0, 5); track space.spaceName; let i = $index) {
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    {{ i + 1 }}
+                  </div>
+                  <span class="font-medium text-gray-900">{{ space.spaceName }}</span>
+                </div>
+                <span class="text-green-600 font-semibold">{{ space.count }} reservas</span>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Distribución de usuarios por rol -->
+      <mat-card class="p-6">
+        <mat-card-header class="pb-4">
+          <mat-card-title class="text-lg font-semibold text-gray-900">
+            <mat-icon class="mr-2 text-indigo-600">people_outline</mat-icon>
+            Distribución por Roles
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="space-y-3">
+            @for (role of metrics()!.usersByRole; track role.role; let i = $index) {
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                  <div class="w-4 h-4 rounded-full"
+                       [style.background-color]="['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'][i] || '#6b7280'">
+                  </div>
+                  <span class="font-medium text-gray-900">{{ role.role }}</span>
+                </div>
+                <div class="text-right">
+                  <div class="font-semibold text-indigo-600">{{ role.count }}</div>
+                  <div class="text-xs text-gray-500">{{ role.percentage }}%</div>
+                </div>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Métricas adicionales -->
+      <mat-card class="p-6">
+        <mat-card-header class="pb-4">
+          <mat-card-title class="text-lg font-semibold text-gray-900">
+            <mat-icon class="mr-2 text-purple-600">analytics</mat-icon>
+            Métricas Adicionales
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+              <span class="text-gray-700">Promedio reservas/día:</span>
+              <span class="font-semibold text-purple-600">
+                {{ (metrics()!.bookingsThisMonth / 30).toFixed(1) }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+              <span class="text-gray-700">Espacios activos:</span>
+              <span class="font-semibold text-blue-600">
+                {{ metrics()!.activeSpaces }} / {{ metrics()!.totalSpaces }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+              <span class="text-gray-700">Reservas esta semana:</span>
+              <span class="font-semibold text-green-600">
+                {{ metrics()!.bookingsThisWeek }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-amber-50 rounded-lg">
+              <span class="text-gray-700">Espacio más popular:</span>
+              <span class="font-semibold text-amber-600">
+                {{ metrics()!.mostUsedSpace.name }}
+              </span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  } @else {
+    <div class="text-center py-12">
+      <mat-icon class="text-6xl text-gray-400 mb-4">error_outline</mat-icon>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Error al cargar los reportes</h3>
+      <p class="text-gray-600 mb-4">No se pudieron obtener los datos de métricas</p>
+      <button mat-raised-button color="primary" (click)="loadReports()">
+        Intentar de nuevo
+      </button>
+    </div>
+  }
+</div>

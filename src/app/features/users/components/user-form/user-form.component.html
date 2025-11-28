@@ -26,6 +26,7 @@
       }
     </mat-form-field>
 
+    @if (!isEditMode) {
     <mat-form-field appearance="fill" class="w-full">
       <mat-label>{{ isEditMode ? 'Nueva contraseña (opcional)' : 'Contraseña' }}</mat-label>
       <input matInput type="password" formControlName="password"
@@ -35,6 +36,7 @@
         <mat-error>{{ getErrorMessage('password') }}</mat-error>
       }
     </mat-form-field>
+  }
 
     <mat-form-field appearance="fill" class="w-full">
       <mat-label>Rol del usuario</mat-label>

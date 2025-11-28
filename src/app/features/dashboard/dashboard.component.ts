@@ -5,6 +5,8 @@ import { StatCardComponent } from '@features/dashboard/components/stat-card/stat
 import { UserState } from '@app/state/UserState';
 import { UserService } from '@features/users/services/user.service';
 import { ROLE_LABELS } from '@app/core/consts/user.roles.consts';
+import { SportSpacesService } from '@app/features/sport-spaces/services/sport-spaces.service';
+import { BookingsService } from '@app/features/bookings/services/bookings.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,6 +17,8 @@ import { ROLE_LABELS } from '@app/core/consts/user.roles.consts';
 })
 export class DashboardComponent implements OnInit {
   private userService = inject(UserService);
+  private sportSpacesService = inject(SportSpacesService);
+  private bookingsService = inject(BookingsService);
 
   constructor(private userState: UserState) {}
 
@@ -32,16 +36,29 @@ export class DashboardComponent implements OnInit {
   });
 
   totalUsers = signal<number>(0);
+  totalSportSpaces = signal<number>(0);
+  currentUserBookings = signal<number>(0);
+  allBookings = signal<number>(0);
 
-  stats = computed(() => [
-    { title: 'Usuarios Activos', value: this.totalUsers(), subtitle: 'Total de usuarios registrados', icon: 'person' },
-    { title: 'Reservas Totales', value: 0, subtitle: '+0% desde el mes pasado', icon: 'calendar_today' },
-    { title: 'Instalaciones', value: 0, subtitle: '4 en uso actualmente', icon: 'building' },
-    { title: 'Solicitudes Pendientes', value: 0, subtitle: 'Requieren aprobación', icon: 'search_activity' },
-  ]);
+  stats = computed(() => {
+    const userRole = this.user().roleKey;
+
+    const allStats = [
+      { title: 'Usuarios Activos', value: this.totalUsers(), subtitle: 'Total de usuarios registrados', icon: 'person', roles: ['admin']},
+      { title: 'Reservas Activas', value: this.currentUserBookings(), subtitle: 'Tu cantidad de reservas activas', icon: 'calendar_today', roles: ['trainer', 'student']},
+      { title: 'Reservas', value: this.allBookings(), subtitle: 'Total de reservas en el sistema', icon: 'event_list', roles: ['admin']},
+      { title: 'Instalaciones', value: this.totalSportSpaces(), subtitle: 'Total de instalaciones registradas', icon: 'building', roles: ['admin']},
+      { title: 'Solicitudes Pendientes', value: 0, subtitle: 'Requieren aprobación', icon: 'search_activity', roles: ['trainer', 'student']},
+    ];
+
+    return allStats.filter(stat => stat.roles.includes(userRole));
+  });
 
   ngOnInit(): void {
     this.loadUserCount();
+    this.loadSportSpaceCount();
+    this.loadBookingsPeerUserCount();
+    this.loadBookingsCount();
   }
 
   private loadUserCount(): void {
@@ -50,8 +67,42 @@ export class DashboardComponent implements OnInit {
         this.totalUsers.set(users.length);
       },
       error: (error) => {
-        console.error('Error loading user count:', error);
+        console.error('Error al cargar la cantidad de usuarios:', error);
         this.totalUsers.set(0);
+      }
+    });
+  }
+
+  private loadBookingsPeerUserCount(): void {
+    this.bookingsService.getBookingsByCreator(this.userState.userId()!).subscribe({
+      next: (bookings) => {
+        this.currentUserBookings.set(bookings.length);
+      },
+      error: (error) => {
+        console.error('Error al cargar la cantidad de reservas:', error);
+      }
+    });
+  }
+
+  private loadBookingsCount(): void {
+    this.bookingsService.getAllBookings().subscribe({
+      next: (bookings) => {
+        this.allBookings.set(bookings.length);
+      },
+      error: (error) => {
+        console.error('Error al cargar la cantidad de reservas:', error);
+      }
+    });
+  }
+
+  private loadSportSpaceCount(): void {
+    this.sportSpacesService.getAllSpaces().subscribe({
+      next: (spaces) => {
+        this.totalSportSpaces.set(spaces.length);
+      },
+      error: (error) => {
+        console.error('Error al cargar la cantidad de instalaciones:', error);
+        this.totalSportSpaces.set(0);
       }
     });
   }
